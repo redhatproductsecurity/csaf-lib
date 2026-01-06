@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.11"
 
 [[package]]
@@ -126,7 +126,7 @@ toml = [
 
 [[package]]
 name = "csaf-vex"
-version = "0.1.0b1"
+version = "0.1.0b3"
 source = { editable = "." }
 dependencies = [
     { name = "attrs" },
