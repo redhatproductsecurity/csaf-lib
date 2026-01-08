@@ -61,12 +61,20 @@ csaf-vex validate examples/sample-vex.json
 
 ## Programmatic use
 ```python
-from csaf_vex.models import CSAFVEXDocument
-from csaf_vex.validation.manager import PluginManager
-import json
 
-with open("examples/sample-vex.json") as f:
-    data = json.load(f)
-doc = CSAFVEXDocument.from_dict(data, verify=True)
-results = PluginManager().run(doc)
+from csaf_vex.validation import Validator
+
+# Create a validator for a VEX file and run all installed plugins
+validator = Validator.from_file("path/to/vex.json")
+report = validator.run_all()
+
+# Check if all plugins passed
+if report.passed:
+    print("All validation plugins passed!")
+else:
+    for result in report.results:
+        if not result.success:
+            print(f"{result.validator_name}:")
+            for err in result.errors:
+                print(f"  - {err.message}")
 ```
