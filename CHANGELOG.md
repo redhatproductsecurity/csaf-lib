@@ -7,10 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Branch `to_dict()` now places `branches` field last for improved JSON readability when navigating nested structures
+
 ## [0.1.0b3] - 2026-01-06
 
 ### Fixed
-- Validation module now properly exposed via __init__.py with exported objects
+- Validation module now properly exposed via `__init__.py` with exported objects
 
 ## [0.1.0b2] - 2025-12-16
 

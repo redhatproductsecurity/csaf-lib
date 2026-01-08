@@ -152,6 +152,14 @@ class Branch(SerializableModel):
             product=FullProductName.from_dict(product_data) if product_data is not None else None,
         )
 
+    def to_dict(self) -> dict[str, Any]:
+        """Convert to dict with branches field always last for better readability."""
+        result = super().to_dict()
+        if "branches" in result:
+            branches_value = result.pop("branches")
+            result["branches"] = branches_value
+        return result
+
 
 @attrs.define
 class Relationship(SerializableModel):

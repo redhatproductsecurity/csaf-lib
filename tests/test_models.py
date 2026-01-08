@@ -189,3 +189,45 @@ class TestEmptyDictHandling:
         data = {"cve": "CVE-2025-0001"}
         vuln = Vulnerability.from_dict(data)
         assert vuln.product_status is None
+
+
+class TestBranchesFieldOrdering:
+    """Test that branches field appears last in Branch objects for better readability."""
+
+    def test_branch_branches_after_name(self):
+        """Test that branches comes after name in Branch objects."""
+        from csaf_vex.models.product_tree import Branch
+
+        branch = Branch.from_dict(
+            {
+                "name": "ACME",
+                "category": "vendor",
+                "branches": [{"category": "product", "name": "Widget"}],
+            }
+        )
+        result = branch.to_dict()
+        keys = list(result.keys())
+
+        assert keys == ["category", "name", "branches"]
+
+    def test_product_tree_alphabetical_order(self):
+        """Test that ProductTree uses alphabetical order (branches before relationships)."""
+        from csaf_vex.models.product_tree import ProductTree
+
+        tree = ProductTree.from_dict(
+            {
+                "branches": [{"category": "vendor", "name": "ACME"}],
+                "relationships": [
+                    {
+                        "category": "default_component_of",
+                        "product_reference": "PROD-1",
+                        "relates_to_product_reference": "PROD-2",
+                        "full_product_name": {"product_id": "PROD-3", "name": "Test"},
+                    }
+                ],
+            }
+        )
+        result = tree.to_dict()
+        keys = list(result.keys())
+
+        assert keys == ["branches", "relationships"]
