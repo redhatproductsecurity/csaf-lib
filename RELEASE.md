@@ -54,6 +54,7 @@ Use the version bump script to update the version in `pyproject.toml` and `CHANG
 
 The script will:
 - Update the version in `pyproject.toml`
+- Update the lock file `uv.lock`
 - Add a new version entry in `CHANGELOG.md` with the current date
 
 ### 3. Review CHANGELOG.md
@@ -71,7 +72,7 @@ Review the `CHANGELOG.md` and manually organize entries if needed. The changelog
 Commit the version bump and push the release branch:
 
 ```bash
-git add pyproject.toml CHANGELOG.md
+git add pyproject.toml uv.lock CHANGELOG.md
 git commit -S -m "Release version X.Y.Z"
 git push origin release-X.Y.Z
 ```
