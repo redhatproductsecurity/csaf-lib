@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0b4] - 2026-01-10
+
 ### Changed
 - Branch `to_dict()` now places `branches` field last for improved JSON readability when navigating nested structures
 
