@@ -11,13 +11,7 @@ A Python library for generating, parsing, and validating CSAF VEX files.
 pip install csaf-vex
 ```
 
-For development:
-
-```bash
-git clone https://github.com/RedHatProductSecurity/csaf-vex.git
-cd csaf-vex
-uv sync --group dev --group test
-```
+For development setup, see [DEVELOP.md](DEVELOP.md).
 
 ## Usage
 
@@ -206,75 +200,11 @@ for test_id, test_name in tests.items():
 | 2.15 | String Length Soft Limit | Strings should not exceed field-specific limits |
 | 2.16 | Initial Date Consistency | initial_release_date must match first revision |
 
-## Development
+## Contributing
 
-### Installation for Development
-
-```bash
-git clone https://github.com/RedHatProductSecurity/csaf-vex.git
-cd csaf-vex
-uv sync --group dev --group test
-```
-
-### Running Tests
-
-```bash
-# Run all tests
-uv run pytest
-
-# Run tests with verbose output
-uv run pytest -v
-
-# Run tests with coverage report
-uv run pytest --cov=csaf_vex --cov-report=term-missing
-
-# Run specific test file
-uv run pytest tests/test_csaf_compliance.py
-uv run pytest tests/test_data_type_checks.py
-
-# Run specific test class or function
-uv run pytest tests/test_csaf_compliance.py::TestVEXProfileConformance
-uv run pytest tests/test_csaf_compliance.py::TestVEXProfileConformance::test_valid_vex_profile
-```
-
-### Running Linter and Formatter
-
-```bash
-# Check linting issues
-uv run ruff check .
-
-# Auto-fix linting issues
-uv run ruff check --fix .
-
-# Format code
-uv run ruff format .
-
-# Check formatting without applying changes
-uv run ruff format --check .
-```
-
-### Project Structure
-
-- `src/csaf_vex/cli.py` - CLI entrypoint
-- `src/csaf_vex/models/` - Internal representation models
-  - `csafvex.py` - Root CSAFVEX document model
-  - `document.py` - Document section models
-  - `product_tree.py` - Product tree models
-  - `vulnerability.py` - Vulnerability models
-  - `common.py` - Shared models (Note, Reference, etc.)
-- `src/csaf_vex/validation/` - Validation logic (semantic validation against external data)
-- `src/csaf_vex/verification/` - Verification logic (structural and format validation)
-  - `result.py` - VerificationResult and VerificationReport classes
-  - `csaf_compliance.py` - Test Set 1: CSAF Standard Compliance tests
-  - `data_type_checks.py` - Test Set 2: Data Type Checking tests
-  - `verifier.py` - Main Verifier orchestration class
-  - `schemas/` - CSAF and CVSS JSON schemas
-- `tests/` - Pytest tests
-  - `conftest.py` - Shared test fixtures
-  - `test_csaf_compliance.py` - Tests for Test Set 1
-  - `test_data_type_checks.py` - Tests for Test Set 2
-  - `test_models.py` - Tests for internal representation models
-  - `test_files/` - Sample CSAF VEX files for testing
+Interested in contributing? Check out:
+- [DEVELOP.md](DEVELOP.md) - Development setup, workflow, and contribution guidelines
+- [RELEASE.md](RELEASE.md) - Release process for maintainers
 
 ## License
 
