@@ -126,7 +126,7 @@ toml = [
 
 [[package]]
 name = "csaf-vex"
-version = "0.1.0b4"
+version = "0.1.0b5"
 source = { editable = "." }
 dependencies = [
     { name = "attrs" },
