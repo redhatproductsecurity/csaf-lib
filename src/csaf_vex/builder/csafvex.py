@@ -351,9 +351,10 @@ class CSAFVEXBuilder:
         if "product_status" in data:
             vuln_dict["product_status"] = data["product_status"]
 
-        if "score" in data and data["score"].get("vector"):
+        if "score" in data and data["score"].get("vector") and data["score"].get("version"):
+            version = "cvss_{}".format(data["score"].get("version")).lower()
             vuln_dict["scores"] = [
-                {"products": product_ids, "cvss_v3": {"vectorString": data["score"]["vector"]}}
+                {"products": product_ids, version: {"vectorString": data["score"]["vector"]}}
             ]
 
         if "references" in data:

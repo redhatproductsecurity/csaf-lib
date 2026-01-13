@@ -1,5 +1,7 @@
 """Tests for CSAF VEX builder."""
 
+import pytest
+
 from csaf_vex.builder import CSAFVEXBuilder
 
 
@@ -49,3 +51,29 @@ class TestBuilderEmptyValues:
             },
         )
         assert vex.product_tree is not None
+
+    @pytest.mark.parametrize(
+        "parser,version,vector",
+        [
+            ("cvss_v2", "V2", "AV:N/AC:H/Au:S/C:P/I:N/A:N"),
+            ("cvss_v3", "V3", "CVSS:3.1/AV:N/AC:H/PR:H/UI:R/S:U/C:L/I:N/A:N/E:P/RL:T/RC:U"),
+        ],
+    )
+    def test_builder_handles_cvss_scores(self, parser, version, vector):
+        """Builder should handle different CVSS score versions."""
+        vex = CSAFVEXBuilder.build(
+            cve_id="CVE-2025-0001",
+            title="Test Advisory",
+            document_data={
+                "publisher": {"name": "Test", "namespace": "https://test.com"},
+                "initial_release_date": "2025-01-01T00:00:00Z",
+            },
+            vulnerability_data={
+                "score": {
+                    "version": version,
+                    "vector": vector,
+                }
+            },
+        )
+
+        assert getattr(vex.vulnerabilities[0].scores[0], parser) is not None
