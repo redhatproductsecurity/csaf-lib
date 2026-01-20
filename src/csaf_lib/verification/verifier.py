@@ -3,7 +3,7 @@ import logging
 from pathlib import Path
 from typing import Any, ClassVar
 
-from csaf_vex.models import CSAFVEX
+from csaf_lib.models import CSAFVEX
 
 from .csaf_compliance import ALL_CSAF_COMPLIANCE_TESTS
 from .data_type_checks import ALL_DATA_TYPE_CHECKS, verify_soft_limit_file_size

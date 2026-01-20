@@ -1,11 +1,11 @@
-"""Validation plugins framework for CSAF VEX documents.
+"""Validation plugins framework for CSAF documents.
 
 This module provides the plugin API and orchestration for running external validation
-plugins against CSAF VEX documents. Use the Validator to discover and run plugins
-registered under the 'csaf_vex.validators' entry point group.
+plugins against CSAF documents. Use the Validator to discover and run plugins
+registered under the 'csaf_lib.validators' entry point group.
 
 Usage:
-    from csaf_vex.validation import Validator
+    from csaf_lib.validation import Validator
 
     # Create a validator from a file and run all installed plugins
     validator = Validator.from_file("path/to/vex.json")

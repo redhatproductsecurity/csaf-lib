@@ -1,8 +1,8 @@
 import pytest
 
-from csaf_vex.models import CSAFVEX
-from csaf_vex.validation.base import ValidationError, ValidationResult
-from csaf_vex.validation.validator import Validator
+from csaf_lib.models import CSAFVEX
+from csaf_lib.validation.base import ValidationError, ValidationResult
+from csaf_lib.validation.validator import Validator
 
 
 @pytest.fixture
@@ -14,7 +14,7 @@ def csafvex_minimal(minimal_vex):
 def test_run_all_with_no_plugins_returns_empty_report(monkeypatch, csafvex_minimal):
     """Validator.run_all should return an empty, passing report when no plugins are present."""
     # Monkeypatch PluginManager.run to return an empty list
-    from csaf_vex.validation import validator as validator_mod
+    from csaf_lib.validation import validator as validator_mod
 
     class DummyManager:
         def __init__(self, *args, **kwargs):
@@ -42,7 +42,7 @@ def test_run_plugins_filters_results(monkeypatch, csafvex_minimal):
         ValidationResult(validator_name="c", success=True, errors=[], duration_ms=3),
     ]
 
-    from csaf_vex.validation import validator as validator_mod
+    from csaf_lib.validation import validator as validator_mod
 
     class DummyManager:
         def __init__(self, *args, **kwargs):
@@ -63,7 +63,7 @@ def test_run_plugins_filters_results(monkeypatch, csafvex_minimal):
 
 def test_get_available_plugins_names(monkeypatch):
     """Validator.get_available_plugins should list discovered plugin names."""
-    from csaf_vex.validation import validator as validator_mod
+    from csaf_lib.validation import validator as validator_mod
 
     class FakePlugin:
         name = "fake_plugin"

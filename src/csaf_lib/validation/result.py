@@ -4,7 +4,7 @@ from typing import Any
 
 import attrs
 
-from csaf_vex.validation.base import ValidationResult
+from csaf_lib.validation.base import ValidationResult
 
 
 @attrs.define

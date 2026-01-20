@@ -6,10 +6,10 @@ from typing import Any
 
 import attrs
 
-from csaf_vex.models.common import SerializableModel, serialize_value
-from csaf_vex.models.document import Document
-from csaf_vex.models.product_tree import ProductTree
-from csaf_vex.models.vulnerability import Vulnerability
+from csaf_lib.models.common import SerializableModel, serialize_value
+from csaf_lib.models.document import Document
+from csaf_lib.models.product_tree import ProductTree
+from csaf_lib.models.vulnerability import Vulnerability
 
 
 @attrs.define

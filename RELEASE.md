@@ -1,6 +1,6 @@
 # Release Guide
 
-This guide describes the release process for the csaf-vex project.
+This guide describes the release process for the csaf-lib project.
 
 ## Table of Contents
 
@@ -100,7 +100,7 @@ Merge the PR to `main` (use regular merge commit, not squash and merge).
 
 Create a release on GitHub:
 
-1. Go to https://github.com/RedHatProductSecurity/csaf-vex/releases/new
+1. Go to https://github.com/RedHatProductSecurity/csaf-lib/releases/new
 2. Select the tag you just pushed
 3. Use "Release X.Y.Z" as the title
 4. Copy the relevant section from CHANGELOG.md as the description
@@ -136,5 +136,5 @@ twine upload dist/*
 Verify the package is available on PyPI:
 
 ```bash
-pip install csaf-vex==X.Y.Z
+pip install csaf-lib==X.Y.Z
 ```

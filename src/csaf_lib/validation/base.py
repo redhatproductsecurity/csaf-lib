@@ -6,7 +6,7 @@ from time import perf_counter
 
 import attrs
 
-from csaf_vex.models import CSAFVEX
+from csaf_lib.models import CSAFVEX
 
 
 @attrs.define
@@ -41,7 +41,7 @@ class ValidationPlugin(ABC):
     description: str = "Validation plugin"
 
     def __init__(self, log_level: int = logging.WARNING) -> None:
-        logger_name = f"csaf_vex.plugins.{self.name}"
+        logger_name = f"csaf_lib.plugins.{self.name}"
         self.logger = logging.getLogger(logger_name)
         self.logger.setLevel(log_level)
 

@@ -1,7 +1,7 @@
-from csaf_vex.models import CSAFVEX
-from csaf_vex.validation import manager as manager_mod
-from csaf_vex.validation.base import ValidationError, ValidationPlugin
-from csaf_vex.validation.manager import PluginManager
+from csaf_lib.models import CSAFVEX
+from csaf_lib.validation import manager as manager_mod
+from csaf_lib.validation.base import ValidationError, ValidationPlugin
+from csaf_lib.validation.manager import PluginManager
 
 
 class MockEntryPoint:

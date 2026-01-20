@@ -2,7 +2,7 @@
 
 from deepdiff import DeepDiff
 
-from csaf_vex.models import CSAFVEX
+from csaf_lib.models import CSAFVEX
 
 
 class TestModelRoundTrip:
@@ -176,7 +176,7 @@ class TestEmptyDictHandling:
 
     def test_empty_product_status_dict_creates_object(self):
         """Empty product_status dict should create object, not be skipped."""
-        from csaf_vex.models.vulnerability import Vulnerability
+        from csaf_lib.models.vulnerability import Vulnerability
 
         data = {"cve": "CVE-2025-0001", "product_status": {}}
         vuln = Vulnerability.from_dict(data)
@@ -184,7 +184,7 @@ class TestEmptyDictHandling:
 
     def test_missing_product_status_is_none(self):
         """Missing product_status key should result in None."""
-        from csaf_vex.models.vulnerability import Vulnerability
+        from csaf_lib.models.vulnerability import Vulnerability
 
         data = {"cve": "CVE-2025-0001"}
         vuln = Vulnerability.from_dict(data)
@@ -196,7 +196,7 @@ class TestBranchesFieldOrdering:
 
     def test_branch_branches_after_name(self):
         """Test that branches comes after name in Branch objects."""
-        from csaf_vex.models.product_tree import Branch
+        from csaf_lib.models.product_tree import Branch
 
         branch = Branch.from_dict(
             {
@@ -212,7 +212,7 @@ class TestBranchesFieldOrdering:
 
     def test_product_tree_alphabetical_order(self):
         """Test that ProductTree uses alphabetical order (branches before relationships)."""
-        from csaf_vex.models.product_tree import ProductTree
+        from csaf_lib.models.product_tree import ProductTree
 
         tree = ProductTree.from_dict(
             {

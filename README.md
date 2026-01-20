@@ -1,14 +1,14 @@
-# csaf-vex
+# csaf-lib
 
-[![Tests](https://github.com/RedHatProductSecurity/csaf-vex/actions/workflows/tests.yml/badge.svg)](https://github.com/RedHatProductSecurity/csaf-vex/actions/workflows/tests.yml)
-[![Lint](https://github.com/RedHatProductSecurity/csaf-vex/actions/workflows/lint.yml/badge.svg)](https://github.com/RedHatProductSecurity/csaf-vex/actions/workflows/lint.yml)
+[![Tests](https://github.com/RedHatProductSecurity/csaf-lib/actions/workflows/tests.yml/badge.svg)](https://github.com/RedHatProductSecurity/csaf-lib/actions/workflows/tests.yml)
+[![Lint](https://github.com/RedHatProductSecurity/csaf-lib/actions/workflows/lint.yml/badge.svg)](https://github.com/RedHatProductSecurity/csaf-lib/actions/workflows/lint.yml)
 
-A Python library for generating, parsing, and validating CSAF VEX files.
+A Python library for generating, parsing, and validating CSAF documents (VEX and Advisory).
 
 ## Installation
 
 ```bash
-pip install csaf-vex
+pip install csaf-lib
 ```
 
 For development setup, see [DEVELOP.md](DEVELOP.md).
@@ -20,41 +20,41 @@ For development setup, see [DEVELOP.md](DEVELOP.md).
 Read and parse a CSAF VEX file (with verification):
 
 ```bash
-csaf-vex read tests/test_files/sample-vex.json
+csaf-lib read tests/test_files/sample-vex.json
 ```
 
 Read with verbose verification output:
 
 ```bash
-csaf-vex read -v tests/test_files/sample-vex.json
+csaf-lib read -v tests/test_files/sample-vex.json
 ```
 
 Disable verification:
 
 ```bash
-csaf-vex read --no-verify tests/test_files/minimal-vex.json
+csaf-lib read --no-verify tests/test_files/minimal-vex.json
 ```
 
 Verify a CSAF VEX file:
 
 ```bash
 # Run all verification tests
-csaf-vex verify tests/test_files/sample-vex.json
+csaf-lib verify tests/test_files/sample-vex.json
 
 # Run only CSAF compliance tests (Test Set 1)
-csaf-vex verify tests/test_files/sample-vex.json --test-set csaf
+csaf-lib verify tests/test_files/sample-vex.json --test-set csaf
 
 # Run only data type checks (Test Set 2)
-csaf-vex verify tests/test_files/sample-vex.json --test-set data
+csaf-lib verify tests/test_files/sample-vex.json --test-set data
 
 # Run specific tests by ID
-csaf-vex verify tests/test_files/sample-vex.json -t 1.1 -t 2.5
+csaf-lib verify tests/test_files/sample-vex.json -t 1.1 -t 2.5
 ```
 
 Validate with plugins:
 
 ```bash
-csaf-vex validate tests/test_files/sample-vex.json
+csaf-lib validate tests/test_files/sample-vex.json
 ```
 
 See docs/plugins.md for authoring and how the plugin system works.
@@ -62,7 +62,7 @@ See docs/plugins.md for authoring and how the plugin system works.
 ### Python API
 
 ```python
-from csaf_vex.models import CSAFVEX
+from csaf_lib.models import CSAFVEX
 
 # Load from file
 csafvex = CSAFVEX.from_file("path/to/document.json")
@@ -97,8 +97,8 @@ data = csafvex.to_dict()
 
 ```python
 import logging
-from csaf_vex.models import CSAFVEX
-from csaf_vex.validation.validator import Validator
+from csaf_lib.models import CSAFVEX
+from csaf_lib.validation.validator import Validator
 
 csafvex = CSAFVEX.from_file("path/to/document.json")
 
@@ -119,7 +119,7 @@ subset = validator.run_plugins(["<PLUGIN-NAME>"])
 print(f"Subset failed: {subset.failed_count}")
 
 # List available plugin names
-from csaf_vex.validation.validator import Validator
+from csaf_lib.validation.validator import Validator
 print(Validator.get_available_plugins())
 ```
 
@@ -135,7 +135,7 @@ The library provides comprehensive verification of CSAF VEX documents through tw
 ### Using the Verifier
 
 ```python
-from csaf_vex.verification import Verifier
+from csaf_lib.verification import Verifier
 
 # Create verifier from a file
 verifier = Verifier.from_file("path/to/vex.json")

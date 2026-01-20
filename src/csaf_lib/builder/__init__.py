@@ -1,6 +1,6 @@
 """Builders for constructing CSAF VEX documents."""
 
-from csaf_vex.builder.csafvex import (
+from csaf_lib.builder.csafvex import (
     DEFAULT_CATEGORY,
     DEFAULT_CSAF_VERSION,
     DEFAULT_GENERATOR_ENGINE_NAME,

@@ -9,7 +9,7 @@ implementing tests from two categories:
   patterns, and schema constraints
 
 Usage:
-    from csaf_vex.verification import Verifier, VerificationReport
+    from csaf_lib.verification import Verifier, VerificationReport
 
     # Create a verifier from a file
     verifier = Verifier.from_file("path/to/vex.json")

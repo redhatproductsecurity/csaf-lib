@@ -3,17 +3,17 @@
 from datetime import datetime, timezone
 from typing import Any
 
-from csaf_vex import __version__
-from csaf_vex.models.csafvex import CSAFVEX
-from csaf_vex.models.document import Document
-from csaf_vex.models.product_tree import (
+from csaf_lib import __version__
+from csaf_lib.models.csafvex import CSAFVEX
+from csaf_lib.models.document import Document
+from csaf_lib.models.product_tree import (
     Branch,
     FullProductName,
     ProductIdentificationHelper,
     ProductTree,
     Relationship,
 )
-from csaf_vex.models.vulnerability import (
+from csaf_lib.models.vulnerability import (
     Vulnerability,
 )
 
@@ -27,7 +27,7 @@ DEFAULT_TLP_LABEL = "WHITE"
 DEFAULT_TLP_URL = "https://www.first.org/tlp/"
 DEFAULT_TRACKING_STATUS = "final"
 DEFAULT_TRACKING_VERSION = "1"
-DEFAULT_GENERATOR_ENGINE_NAME = "csaf-vex"
+DEFAULT_GENERATOR_ENGINE_NAME = "csaf-lib"
 DEFAULT_REVISION_NUMBER = "1"
 DEFAULT_REVISION_SUMMARY = "Initial version"
 
@@ -88,7 +88,7 @@ class CSAFVEXBuilder:
                 - distribution.tlp: {"label": "WHITE", "url": "https://www.first.org/tlp/"}
                 - tracking.status: "final"
                 - tracking.version: "1"
-                - tracking.generator.engine.name: "csaf-vex"
+                - tracking.generator.engine.name: "csaf-lib"
                 - tracking.generator.engine.version: Current library version
                 - tracking.generator.date: Current UTC timestamp
                 - tracking.initial_release_date: Copied from document initial_release_date
