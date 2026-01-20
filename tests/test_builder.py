@@ -2,7 +2,7 @@
 
 import pytest
 
-from csaf_vex.builder import CSAFVEXBuilder
+from csaf_lib.builder import CSAFVEXBuilder
 
 
 class TestBuilderEmptyValues:

@@ -5,7 +5,7 @@ from typing import Any
 import attrs
 from packageurl import PackageURL
 
-from csaf_vex.models.common import SerializableModel
+from csaf_lib.models.common import SerializableModel
 
 # @attrs.define
 # class FileHash:

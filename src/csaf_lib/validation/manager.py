@@ -1,10 +1,10 @@
-"""Plugin manager for CSAF VEX validators."""
+"""Plugin manager for CSAF validators."""
 
 import logging
 from importlib.metadata import entry_points
 
-from csaf_vex.models import CSAFVEX
-from csaf_vex.validation.base import ValidationPlugin, ValidationResult
+from csaf_lib.models import CSAFVEX
+from csaf_lib.validation.base import ValidationPlugin, ValidationResult
 
 logger = logging.getLogger(__name__)
 
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 class PluginManager:
     """Discovers and runs validators exposed via Python entry points."""
 
-    PLUGIN_ENTRY_POINT_GROUP = "csaf_vex.validators"
+    PLUGIN_ENTRY_POINT_GROUP = "csaf_lib.validators"
 
     def __init__(self, log_level: int = logging.WARNING) -> None:
         self.log_level = log_level

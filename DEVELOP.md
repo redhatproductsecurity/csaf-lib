@@ -1,6 +1,6 @@
 # Developer Guide
 
-This guide provides information for developers who want to contribute to the csaf-vex project.
+This guide provides information for developers who want to contribute to the csaf-lib project.
 
 ## Table of Contents
 
@@ -23,8 +23,8 @@ This guide provides information for developers who want to contribute to the csa
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/RedHatProductSecurity/csaf-vex.git
-cd csaf-vex
+git clone https://github.com/RedHatProductSecurity/csaf-lib.git
+cd csaf-lib
 ```
 
 2. Install dependencies with development and test groups:
@@ -38,7 +38,7 @@ This will install all project dependencies, development tools (ruff), and testin
 3. Verify installation:
 
 ```bash
-uv run csaf-vex --help
+uv run csaf-lib --help
 ```
 
 4. Configure Git commit signing (required):
@@ -53,7 +53,7 @@ For more information on setting up GPG signing, see the [GitHub documentation on
 ## Project Structure
 
 ```
-csaf-vex/
+csaf-lib/
 ├── src/csaf_vex/          # Main package source code
 │   ├── cli.py             # CLI entrypoint
 │   ├── models/            # Internal representation models
@@ -190,6 +190,6 @@ Test guidelines:
 
 ## Getting Help
 
-- Report issues at: https://github.com/RedHatProductSecurity/csaf-vex/issues
+- Report issues at: https://github.com/RedHatProductSecurity/csaf-lib/issues
 - Review existing documentation in the `docs/` directory
 - Check the README.md for usage examples

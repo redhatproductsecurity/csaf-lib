@@ -3,8 +3,8 @@
 This module tests the CSAF compliance verification functions (1.1-1.14).
 """
 
-from csaf_vex.verification import VerificationStatus, Verifier
-from csaf_vex.verification.csaf_compliance import (
+from csaf_lib.verification import VerificationStatus, Verifier
+from csaf_lib.verification.csaf_compliance import (
     verify_action_statement_requirement,
     verify_base_mandatory_fields,
     verify_flag_product_reference,

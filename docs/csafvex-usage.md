@@ -5,7 +5,7 @@
 ### From a File
 
 ```python
-from csaf_vex.models import CSAFVEX
+from csaf_lib.models import CSAFVEX
 
 # Load from JSON file
 csafvex = CSAFVEX.from_file("path/to/document.json")
@@ -15,7 +15,7 @@ csafvex = CSAFVEX.from_file("path/to/document.json")
 
 ```python
 import json
-from csaf_vex.models import CSAFVEX
+from csaf_lib.models import CSAFVEX
 
 # Load from JSON string/dict
 with open("document.json") as f:

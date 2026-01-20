@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **BREAKING**: Package renamed from `csaf-vex` to `csaf-lib` to support both VEX and Advisory documents
+- **BREAKING**: Python import changed from `csaf_vex` to `csaf_lib`
+- **BREAKING**: CLI command changed from `csaf-vex` to `csaf-lib`
+- **BREAKING**: Plugin entry point group changed from `csaf_vex.validators` to `csaf_lib.validators`
+- **BREAKING**: Default generator engine name changed from `csaf-vex` to `csaf-lib`
+
 ## [0.1.0b5] - 2026-01-13
 
 ### Fixed

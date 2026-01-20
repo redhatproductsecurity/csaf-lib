@@ -13,7 +13,7 @@ The builder reduces boilerplate by:
 ## Basic Usage
 
 ```python
-from csaf_vex.builder import CSAFVEXBuilder
+from csaf_lib.builder import CSAFVEXBuilder
 
 vex = CSAFVEXBuilder.build(
     cve_id="CVE-2025-66293",
@@ -103,7 +103,7 @@ Document metadata. The following fields are automatically set if not provided:
 - `distribution.tlp`: `{"label": "WHITE", "url": "https://www.first.org/tlp/"}`
 - `tracking.status`: `"final"`
 - `tracking.version`: `"1"`
-- `tracking.generator.engine.name`: `"csaf-vex"`
+- `tracking.generator.engine.name`: `"csaf-lib"`
 - `tracking.generator.engine.version`: Current library version
 - `tracking.generator.date`: Current UTC timestamp
 - `tracking.current_release_date`: Current UTC timestamp if not provided
@@ -168,7 +168,7 @@ Product tree structure.
 Import default values for customization:
 
 ```python
-from csaf_vex.builder import (
+from csaf_lib.builder import (
     DEFAULT_CATEGORY,
     DEFAULT_CSAF_VERSION,
     DEFAULT_LANG,
@@ -201,7 +201,7 @@ Create a relationship between component and stream.
 
 ```python
 from datetime import datetime, timezone
-from csaf_vex.builder import CSAFVEXBuilder
+from csaf_lib.builder import CSAFVEXBuilder
 
 # Prepare data
 cve_id = "CVE-2025-12345"

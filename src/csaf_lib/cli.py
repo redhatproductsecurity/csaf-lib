@@ -1,4 +1,4 @@
-"""CLI entrypoint for csaf-vex."""
+"""CLI entrypoint for csaf-lib."""
 
 import json
 import logging
@@ -7,9 +7,9 @@ from typing import Any
 
 import click
 
-from csaf_vex.models import CSAFVEX
-from csaf_vex.validation.validator import Validator
-from csaf_vex.verification import VerificationReport, VerificationStatus, Verifier
+from csaf_lib.models import CSAFVEX
+from csaf_lib.validation.validator import Validator
+from csaf_lib.verification import VerificationReport, VerificationStatus, Verifier
 
 
 def _display_result_details(details: dict[str, Any], indent: str, truncate: bool) -> None:
@@ -110,7 +110,7 @@ def _display_validation_summary(report) -> None:
 
 @click.group()
 def main():
-    """CSAF VEX file manipulation tool."""
+    """CSAF file manipulation tool."""
     pass
 
 

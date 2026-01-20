@@ -5,7 +5,7 @@ from typing import Any
 
 import attrs
 
-from csaf_vex.models.common import Note, Reference, SerializableModel
+from csaf_lib.models.common import Note, Reference, SerializableModel
 
 
 @attrs.define

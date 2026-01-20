@@ -5,8 +5,8 @@ This module tests the data type checking verification functions (2.1-2.16).
 
 import json
 
-from csaf_vex.verification import VerificationStatus, Verifier
-from csaf_vex.verification.data_type_checks import (
+from csaf_lib.verification import VerificationStatus, Verifier
+from csaf_lib.verification.data_type_checks import (
     verify_cpe_format,
     verify_cve_id_format,
     verify_cvss_calculation,

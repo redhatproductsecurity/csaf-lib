@@ -12,9 +12,9 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from csaf_vex.models import CSAFVEX
-from csaf_vex.validation.manager import PluginManager
-from csaf_vex.validation.result import ValidationReport
+from csaf_lib.models import CSAFVEX
+from csaf_lib.validation.manager import PluginManager
+from csaf_lib.validation.result import ValidationReport
 
 
 class Validator:
