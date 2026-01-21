@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0b6] - 2026-01-21
+
 ### Changed
 - **BREAKING**: Package renamed from `csaf-vex` to `csaf-lib` to support both VEX and Advisory documents
 - **BREAKING**: Python import changed from `csaf_vex` to `csaf_lib`
