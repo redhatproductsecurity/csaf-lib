@@ -109,7 +109,8 @@ class CSAFVEXBuilder:
                 - discovery_date: Optional discovery date (ISO format string or datetime)
                 - product_status: Dict mapping status to product IDs
                 - score: Optional CVSS score dict with vector
-                - remediation: Optional remediation text
+                - remediations: Optional list of remediation dicts with category (required),
+                  details (required), and optionally date, product_ids, url
                 - references: List of reference dicts with category, url, summary
                 - flags: Optional list of flag dicts with label and product_ids
                 - notes: Optional list of note dicts with category, text, and title
@@ -366,13 +367,26 @@ class CSAFVEXBuilder:
         if "notes" in data:
             vuln_dict["notes"] = data["notes"]
 
-        if "remediation" in data:
-            vuln_dict["remediations"] = [
-                {
-                    "category": "workaround",
-                    "details": data["remediation"],
-                    "product_ids": product_ids,
+        if "remediations" in data:
+            remediations = []
+            for remediation in data["remediations"]:
+                remediation_dict = {
+                    "category": remediation["category"],
+                    "details": remediation["details"],
                 }
-            ]
+
+                # Add optional fields if provided
+                if "date" in remediation:
+                    remediation_dict["date"] = remediation["date"]
+
+                if "url" in remediation:
+                    remediation_dict["url"] = remediation["url"]
+
+                if "product_ids" in remediation:
+                    remediation_dict["product_ids"] = remediation["product_ids"]
+
+                remediations.append(remediation_dict)
+
+            vuln_dict["remediations"] = remediations
 
         return Vulnerability.from_dict(vuln_dict)
