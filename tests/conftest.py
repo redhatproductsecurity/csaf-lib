@@ -248,6 +248,13 @@ def document_with_cvss() -> dict:
                 "version": "1",
                 "initial_release_date": "2025-01-01T00:00:00.000Z",
                 "current_release_date": "2025-01-01T00:00:00.000Z",
+                "revision_history": [
+                    {
+                        "date": "2025-01-01T00:00:00.000Z",
+                        "number": "1",
+                        "summary": "Initial version",
+                    }
+                ],
             },
         },
         "product_tree": {
