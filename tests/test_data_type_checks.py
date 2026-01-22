@@ -4,6 +4,7 @@ This module tests the data type checking verification functions (2.1-2.16).
 """
 
 import json
+from unittest.mock import patch
 
 from csaf_lib.verification import VerificationStatus, Verifier
 from csaf_lib.verification.data_type_checks import (
@@ -48,6 +49,28 @@ class TestJSONSchemaValidation:
         result = verify_json_schema(doc)
         # May skip if jsonschema not installed, otherwise should fail
         assert result.status in (VerificationStatus.FAIL, VerificationStatus.SKIP)
+
+    def test_cvss_schema_not_downloaded_from_network(self, document_with_cvss):
+        """Test that CVSS schemas referenced via $ref are not downloaded from network.
+
+        This test validates a document containing CVSS scores while blocking all
+        HTTP requests to first.org, proving that the CVSS schemas are loaded
+        from local files via the registry instead of being downloaded.
+        """
+
+        # Mock urllib to block requests to first.org
+        def block_first_org(url, *args, **kwargs):
+            url_str = url.full_url if hasattr(url, "full_url") else str(url)
+            if "first.org" in url_str:
+                raise AssertionError(
+                    f"Attempted to download CVSS schema from {url_str}! Should use local files."
+                )
+            raise RuntimeError(f"Unexpected URL request: {url_str}")
+
+        with patch("urllib.request.urlopen", side_effect=block_first_org):
+            result = verify_json_schema(document_with_cvss)
+
+            assert result.status in (VerificationStatus.PASS, VerificationStatus.SKIP)
 
 
 class TestPURLFormat:

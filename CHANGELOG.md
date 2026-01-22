@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Schema validation now uses local CVSS schemas instead of downloading from network
+
 ## [0.1.0b6] - 2026-01-21
 
 ### Changed

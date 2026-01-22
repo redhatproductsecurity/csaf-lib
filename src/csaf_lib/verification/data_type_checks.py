@@ -18,6 +18,11 @@ from .result import VerificationResult, VerificationSeverity, VerificationStatus
 # Lazy-loaded schema cache
 _SCHEMA_CACHE: dict[str, Any] = {}
 
+# CVSS schema URLs referenced in CSAF schema
+CVSS_V2_SCHEMA_URL = "https://www.first.org/cvss/cvss-v2.0.json"
+CVSS_V3_0_SCHEMA_URL = "https://www.first.org/cvss/cvss-v3.0.json"
+CVSS_V3_1_SCHEMA_URL = "https://www.first.org/cvss/cvss-v3.1.json"
+
 # CPE 2.3 pattern (Formatted String Binding)
 CPE_23_PATTERN = re.compile(
     r"^cpe:2\.3:[aho\*\-]"
@@ -174,6 +179,7 @@ def verify_json_schema(document: dict[str, Any]) -> VerificationResult:
     """
     try:
         import jsonschema
+        from referencing import Registry, Resource
     except ImportError:
         return VerificationResult(
             test_id="2.1",
@@ -195,8 +201,20 @@ def verify_json_schema(document: dict[str, Any]) -> VerificationResult:
             source_ref="CSAF JSON Schema",
         )
 
+    # Pre-load CVSS schemas to avoid network requests during validation
+    # This prevents urllib from hanging when resolving external $ref URLs
+    cvss_v2_schema = _get_schema("cvss_v2_0")
+    cvss_v3_0_schema = _get_schema("cvss_v3_0")
+    cvss_v3_1_schema = _get_schema("cvss_v3_1")
+    registry = (
+        Registry()
+        .with_resource(CVSS_V2_SCHEMA_URL, Resource.from_contents(cvss_v2_schema))
+        .with_resource(CVSS_V3_0_SCHEMA_URL, Resource.from_contents(cvss_v3_0_schema))
+        .with_resource(CVSS_V3_1_SCHEMA_URL, Resource.from_contents(cvss_v3_1_schema))
+    )
+
     try:
-        jsonschema.validate(instance=document, schema=schema)
+        jsonschema.validate(instance=document, schema=schema, registry=registry)
     except jsonschema.ValidationError as e:
         return VerificationResult(
             test_id="2.1",
