@@ -97,10 +97,7 @@ Document metadata. The following fields are automatically set if not provided:
 **Automatic Defaults:**
 - `category`: `"csaf_vex"`
 - `csaf_version`: `"2.0"`
-- `lang`: `"en"`
-- `source_lang`: `"en"`
 - `publisher.category`: `"vendor"`
-- `distribution.tlp`: `{"label": "WHITE", "url": "https://www.first.org/tlp/"}`
 - `tracking.status`: `"final"`
 - `tracking.version`: `"1"`
 - `tracking.generator.engine.name`: `"csaf-lib"`
@@ -171,11 +168,7 @@ Import default values for customization:
 from csaf_lib.builder import (
     DEFAULT_CATEGORY,
     DEFAULT_CSAF_VERSION,
-    DEFAULT_LANG,
-    DEFAULT_SOURCE_LANG,
     DEFAULT_PUBLISHER_CATEGORY,
-    DEFAULT_TLP_LABEL,
-    DEFAULT_TLP_URL,
     DEFAULT_TRACKING_STATUS,
     DEFAULT_TRACKING_VERSION,
     DEFAULT_GENERATOR_ENGINE_NAME,
