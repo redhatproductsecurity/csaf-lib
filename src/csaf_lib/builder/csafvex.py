@@ -20,11 +20,7 @@ from csaf_lib.models.vulnerability import (
 # Default values for CSAF VEX documents
 DEFAULT_CATEGORY = "csaf_vex"
 DEFAULT_CSAF_VERSION = "2.0"
-DEFAULT_LANG = "en"
-DEFAULT_SOURCE_LANG = "en"
 DEFAULT_PUBLISHER_CATEGORY = "vendor"
-DEFAULT_TLP_LABEL = "WHITE"
-DEFAULT_TLP_URL = "https://www.first.org/tlp/"
 DEFAULT_TRACKING_STATUS = "final"
 DEFAULT_TRACKING_VERSION = "1"
 DEFAULT_GENERATOR_ENGINE_NAME = "csaf-lib"
@@ -82,10 +78,7 @@ class CSAFVEXBuilder:
                 The following defaults are automatically set if not provided:
                 - category: "csaf_vex"
                 - csaf_version: "2.0"
-                - lang: "en"
-                - source_lang: "en"
                 - publisher.category: "vendor"
-                - distribution.tlp: {"label": "WHITE", "url": "https://www.first.org/tlp/"}
                 - tracking.status: "final"
                 - tracking.version: "1"
                 - tracking.generator.engine.name: "csaf-lib"
@@ -174,19 +167,10 @@ class CSAFVEXBuilder:
         # Set defaults if not provided
         document_data.setdefault("category", DEFAULT_CATEGORY)
         document_data.setdefault("csaf_version", DEFAULT_CSAF_VERSION)
-        document_data.setdefault("lang", DEFAULT_LANG)
-        document_data.setdefault("source_lang", DEFAULT_SOURCE_LANG)
 
         # Handle publisher with defaults
         if "publisher" in document_data:
             document_data["publisher"].setdefault("category", DEFAULT_PUBLISHER_CATEGORY)
-
-        # Handle distribution with TLP defaults
-        if "distribution" not in document_data:
-            document_data["distribution"] = {}
-        document_data["distribution"].setdefault(
-            "tlp", {"label": DEFAULT_TLP_LABEL, "url": DEFAULT_TLP_URL}
-        )
 
         # Get current timestamp for defaults
         now = datetime.now(timezone.utc).isoformat()
