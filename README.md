@@ -215,5 +215,6 @@ MIT License - see [LICENSE](LICENSE) file for details.
 - Jakub Frejlach (jfrejlac@redhat.com)
 - Juan Perez de Algaba (jperezde@redhat.com)
 - George Vauter (gvauter@redhat.com)
+- Daniel Monzonis (dmonzoni@redhat.com)
 
 Developed by Red Hat Product Security.
