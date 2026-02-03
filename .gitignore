@@ -16,3 +16,6 @@ wheels/
 .idea/
 *.iml
 *.iws
+
+# Env file
+.env
