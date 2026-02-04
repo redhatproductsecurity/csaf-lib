@@ -6,6 +6,12 @@ from typing import Any
 from csaf_lib import __version__
 from csaf_lib.models.csafvex import CSAFVEX
 from csaf_lib.models.document import Document
+from csaf_lib.models.enums import (
+    BranchCategory,
+    PublisherCategory,
+    RelationshipCategory,
+    TrackingStatus,
+)
 from csaf_lib.models.product_tree import (
     Branch,
     FullProductName,
@@ -21,8 +27,8 @@ from csaf_lib.utils import format_datetime
 # Default values for CSAF VEX documents
 DEFAULT_CATEGORY = "csaf_vex"
 DEFAULT_CSAF_VERSION = "2.0"
-DEFAULT_PUBLISHER_CATEGORY = "vendor"
-DEFAULT_TRACKING_STATUS = "final"
+DEFAULT_PUBLISHER_CATEGORY = PublisherCategory.VENDOR
+DEFAULT_TRACKING_STATUS = TrackingStatus.FINAL
 DEFAULT_TRACKING_VERSION = "1"
 DEFAULT_GENERATOR_ENGINE_NAME = "csaf-lib"
 DEFAULT_REVISION_NUMBER = "1"
@@ -232,7 +238,7 @@ class CSAFVEXBuilder:
             product_id=name,
             product_identification_helper=ProductIdentificationHelper(cpe=cpe),
         )
-        return Branch(category="product_name", name=name, product=product)
+        return Branch(category=BranchCategory.PRODUCT_NAME, name=name, product=product)
 
     @staticmethod
     def _create_component_branch(name: str, purl: str) -> Branch:
@@ -242,7 +248,7 @@ class CSAFVEXBuilder:
             product_id=name,
             product_identification_helper=ProductIdentificationHelper(purl=purl),
         )
-        return Branch(category="product_version", name=name, product=product)
+        return Branch(category=BranchCategory.PRODUCT_VERSION, name=name, product=product)
 
     @staticmethod
     def _create_relationship(component: str, stream: str) -> Relationship:
@@ -252,7 +258,7 @@ class CSAFVEXBuilder:
             product_id=f"{stream}:{component}",
         )
         return Relationship(
-            category="default_component_of",
+            category=RelationshipCategory.DEFAULT_COMPONENT_OF,
             full_product_name=full_product,
             product_reference=component,
             relates_to_product_reference=stream,
@@ -288,7 +294,7 @@ class CSAFVEXBuilder:
             )
 
         # TODO: handle product_family, architecture
-        vendor_branch = Branch(category="vendor", name=vendor_name, branches=branches)
+        vendor_branch = Branch(category=BranchCategory.VENDOR, name=vendor_name, branches=branches)
 
         relationships = []
         for record in products_data:

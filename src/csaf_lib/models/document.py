@@ -6,6 +6,7 @@ from typing import Any
 import attrs
 
 from csaf_lib.models.common import Note, Reference, SerializableModel
+from csaf_lib.models.enums import PublisherCategory, TLPLabel, TrackingStatus
 
 
 @attrs.define
@@ -32,7 +33,7 @@ class TLP(SerializableModel):
     """Represents Traffic Light Protocol information."""
 
     # Required fields per CSAF spec (nullable to allow parsing invalid documents)
-    label: str | None = attrs.field(default=None)
+    label: TLPLabel | None = attrs.field(default=None)
 
     # Optional fields (CSAF spec order)
     url: str | None = attrs.field(default=None)
@@ -40,8 +41,9 @@ class TLP(SerializableModel):
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "TLP":
         """Create a TLP from a dictionary."""
+        label_str = data.get("label")
         return cls(
-            label=data.get("label"),
+            label=TLPLabel(label_str) if label_str is not None else None,
             url=data.get("url"),
         )
 
@@ -68,7 +70,7 @@ class Publisher(SerializableModel):
     """Represents the publisher of the document."""
 
     # Required fields per CSAF spec (nullable to allow parsing invalid documents)
-    category: str | None = attrs.field(default=None)
+    category: PublisherCategory | None = attrs.field(default=None)
     name: str | None = attrs.field(default=None)
     namespace: str | None = attrs.field(default=None)
 
@@ -79,8 +81,9 @@ class Publisher(SerializableModel):
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "Publisher":
         """Create a Publisher from a dictionary."""
+        category_str = data.get("category")
         return cls(
-            category=data.get("category"),
+            category=PublisherCategory(category_str) if category_str is not None else None,
             name=data.get("name"),
             namespace=data.get("namespace"),
             contact_details=data.get("contact_details"),
@@ -158,7 +161,7 @@ class Tracking(SerializableModel):
 
     # Required fields per CSAF spec (nullable to allow parsing invalid documents)
     id: str | None = attrs.field(default=None)
-    status: str | None = attrs.field(default=None)
+    status: TrackingStatus | None = attrs.field(default=None)
     version: str | None = attrs.field(default=None)
     current_release_date: datetime | None = attrs.field(default=None)
     initial_release_date: datetime | None = attrs.field(default=None)
@@ -176,10 +179,11 @@ class Tracking(SerializableModel):
         generator_data = data.get("generator")
         current_release_date_str = data.get("current_release_date")
         initial_release_date_str = data.get("initial_release_date")
+        status_str = data.get("status")
 
         return cls(
             id=data.get("id"),
-            status=data.get("status"),
+            status=TrackingStatus(status_str) if status_str is not None else None,
             version=data.get("version"),
             current_release_date=datetime.fromisoformat(current_release_date_str)
             if current_release_date_str is not None

@@ -6,6 +6,7 @@ import attrs
 from packageurl import PackageURL
 
 from csaf_lib.models.common import SerializableModel
+from csaf_lib.models.enums import BranchCategory, RelationshipCategory
 
 # @attrs.define
 # class FileHash:
@@ -132,7 +133,7 @@ class Branch(SerializableModel):
     """Represents a branch in the hierarchical product tree structure."""
 
     # Required fields per CSAF spec (nullable to allow parsing invalid documents)
-    category: str | None = attrs.field(default=None)
+    category: BranchCategory | None = attrs.field(default=None)
     name: str | None = attrs.field(default=None)
 
     # Optional fields - note: must have either branches OR product (not both)
@@ -144,9 +145,10 @@ class Branch(SerializableModel):
         """Create a Branch from a dictionary."""
         branches_data = data.get("branches", [])
         product_data = data.get("product")
+        category_str = data.get("category")
 
         return cls(
-            category=data.get("category"),
+            category=BranchCategory(category_str) if category_str is not None else None,
             name=data.get("name"),
             branches=[Branch.from_dict(b) for b in branches_data],
             product=FullProductName.from_dict(product_data) if product_data is not None else None,
@@ -166,7 +168,7 @@ class Relationship(SerializableModel):
     """Establishes a relationship between two products."""
 
     # Required fields per CSAF spec (nullable to allow parsing invalid documents)
-    category: str | None = attrs.field(default=None)
+    category: RelationshipCategory | None = attrs.field(default=None)
     full_product_name: FullProductName | None = attrs.field(default=None)
     product_reference: str | None = attrs.field(default=None)
     relates_to_product_reference: str | None = attrs.field(default=None)
@@ -175,9 +177,10 @@ class Relationship(SerializableModel):
     def from_dict(cls, data: dict[str, Any]) -> "Relationship":
         """Create a Relationship from a dictionary."""
         full_product_name_data = data.get("full_product_name")
+        category_str = data.get("category")
 
         return cls(
-            category=data.get("category"),
+            category=RelationshipCategory(category_str) if category_str is not None else None,
             full_product_name=FullProductName.from_dict(full_product_name_data)
             if full_product_name_data is not None
             else None,

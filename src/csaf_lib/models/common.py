@@ -1,22 +1,28 @@
 """Common data models shared across CSAF VEX sections."""
 
 from datetime import datetime
+from enum import Enum
 from typing import Any
 
 import attrs
 from cvss import CVSS2, CVSS3
 from packageurl import PackageURL
 
+from csaf_lib.models.enums import NoteCategory, ReferenceCategory
 from csaf_lib.utils import format_datetime
 
 
 def serialize_value(inst: type, field: attrs.Attribute, value: Any) -> Any:
     """Custom value serializer for attrs.asdict().
 
-    Handles special types like datetime, CVSS objects, and PackageURL.
+    Handles special types like datetime, CVSS objects, PackageURL, and Enum.
     """
     if value is None:
         return None
+
+    # Handle Enum objects - convert to their string value
+    if isinstance(value, Enum):
+        return value.value
 
     # Handle datetime objects
     if isinstance(value, datetime):
@@ -68,7 +74,7 @@ class Note(SerializableModel):
     """Represents a note in the document or vulnerability."""
 
     # Required fields per CSAF spec (nullable to allow parsing invalid documents)
-    category: str | None = attrs.field(default=None)
+    category: NoteCategory | None = attrs.field(default=None)
     text: str | None = attrs.field(default=None)
 
     # Optional fields (CSAF spec order)
@@ -79,8 +85,9 @@ class Note(SerializableModel):
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "Note":
         """Create a Note from a dictionary."""
+        category_str = data.get("category")
         return cls(
-            category=data.get("category"),
+            category=NoteCategory(category_str) if category_str is not None else None,
             text=data.get("text"),
             title=data.get("title"),
             # audience=data.get("audience"),
@@ -96,15 +103,16 @@ class Reference(SerializableModel):
     url: str | None = attrs.field(default=None)
 
     # Optional fields (CSAF spec order)
-    category: str | None = attrs.field(default=None)
+    category: ReferenceCategory | None = attrs.field(default=None)
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "Reference":
         """Create a Reference from a dictionary."""
+        category_str = data.get("category")
         return cls(
             summary=data.get("summary"),
             url=data.get("url"),
-            category=data.get("category"),
+            category=ReferenceCategory(category_str) if category_str is not None else None,
         )
 
 
