@@ -354,7 +354,7 @@ class TestDateTimeFormat:
             "document": {
                 "tracking": {
                     "initial_release_date": "2025/01/01",  # Wrong format
-                    "current_release_date": "2025-01-01T00:00:00.000Z",
+                    "current_release_date": "2025-01-01T00:00:00Z",
                 }
             }
         }
@@ -1275,11 +1275,11 @@ class TestInitialDateConsistency:
         doc = {
             "document": {
                 "tracking": {
-                    "initial_release_date": "2025-01-01T00:00:00.000Z",
+                    "initial_release_date": "2025-01-01T00:00:00Z",
                     "revision_history": [
                         {
                             "number": "1",
-                            "date": "2025-01-02T00:00:00.000Z",  # Different from initial
+                            "date": "2025-01-02T00:00:00Z",  # Different from initial
                             "summary": "First version",
                         }
                     ],
@@ -1300,7 +1300,7 @@ class TestInitialDateConsistency:
         doc = {
             "document": {
                 "tracking": {
-                    "initial_release_date": "2025-01-01T00:00:00.000Z",
+                    "initial_release_date": "2025-01-01T00:00:00Z",
                 }
             }
         }

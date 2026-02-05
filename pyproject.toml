@@ -7,7 +7,8 @@ license = { file = "LICENSE" }
 authors = [
     { name = "Jakub Frejlach", email = "jfrejlac@redhat.com" },
     { name = "Juan Perez de Algaba", email = "jperezde@redhat.com" },
-    { name = "George Vauter", email = "gvauter@redhat.com" }
+    { name = "George Vauter", email = "gvauter@redhat.com" },
+    { name = "Daniel Monzonis", email = "dmonzoni@redhat.com" }
 ]
 requires-python = ">=3.11"
 dependencies = [
