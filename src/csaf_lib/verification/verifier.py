@@ -83,7 +83,7 @@ class Verifier:
             test_id = f"1.{i}"
             cls._TEST_REGISTRY[test_id] = ("csaf_compliance", test_func)
 
-        # Register data type checks (2.1 - 2.16)
+        # Register data type checks (2.1 - 2.15)
         for i, test_func in enumerate(ALL_DATA_TYPE_CHECKS, start=1):
             test_id = f"2.{i}"
             cls._TEST_REGISTRY[test_id] = ("data_type_checks", test_func)

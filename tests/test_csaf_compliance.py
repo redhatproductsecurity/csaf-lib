@@ -552,8 +552,8 @@ class TestVerifierCSAFCompliance:
         """Test getting the list of available tests."""
         tests = Verifier.get_available_tests()
 
-        # Should have 30 tests total (14 CSAF + 16 data type)
-        assert len(tests) == 30
+        # Should have 29 tests total (14 CSAF + 15 data type)
+        assert len(tests) == 29
         assert "1.1" in tests
         assert "2.1" in tests
 
