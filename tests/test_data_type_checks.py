@@ -1268,10 +1268,10 @@ class TestVerifierDataTypeChecks:
         verifier = Verifier(valid_vex_document)
         report = verifier.run_data_type_checks()
 
-        assert report.total_tests == 16
+        assert report.total_tests == 15
         # Check that all data type tests ran
         test_ids = {r.test_id for r in report.results}
-        expected_ids = {f"2.{i}" for i in range(1, 17)}
+        expected_ids = {f"2.{i}" for i in range(1, 16)}
         assert test_ids == expected_ids
 
     def test_run_all_on_valid_document(self, valid_vex_document):
