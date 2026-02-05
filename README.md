@@ -59,7 +59,7 @@ csaf-lib validate tests/test_files/sample-vex.json
 
 See docs/plugins.md for authoring and how the plugin system works.
 
-### Python API
+### Python API - Reading Documents
 
 ```python
 from csaf_lib.models import CSAFVEX
@@ -93,6 +93,66 @@ if csafvex.product_tree:
 data = csafvex.to_dict()
 ```
 
+### Python API - Creating Documents
+
+```python
+from csaf_lib.models import (
+    CSAFVEX, Document, ProductTree, Vulnerability,
+    CSAFVersion, PublisherCategory, TrackingStatus,
+    BranchCategory, RelationshipCategory, RemediationCategory
+)
+from datetime import datetime, timezone
+
+# Create document with fluent API
+doc = Document(
+    category="csaf_vex",
+    csaf_version=CSAFVersion.VERSION_2_0,
+    title="Security Advisory for CVE-2025-0001"
+)
+
+doc.with_publisher(
+    name="Red Hat Product Security",
+    namespace="https://redhat.com",
+    category=PublisherCategory.VENDOR
+).with_tracking(
+    id="CVE-2025-0001",
+    status=TrackingStatus.FINAL,
+    version="1",
+    initial_release_date=datetime(2025, 1, 1, tzinfo=timezone.utc),
+    generator_engine_name="csaf-lib",
+    generator_engine_version="0.1.0"
+).add_tracking_revision(
+    number="1",
+    date=datetime(2025, 1, 1, tzinfo=timezone.utc),
+    summary="Initial version"
+)
+
+# Create product tree
+tree = ProductTree()
+vendor = tree.add_branch(BranchCategory.VENDOR, "Red Hat")
+vendor.add_product_branch(
+    category=BranchCategory.PRODUCT_VERSION,
+    name="curl-1.0",
+    product_name="curl version 1.0",
+    product_id="curl-1.0",
+    helper_purl="pkg:rpm/redhat/curl@1.0"
+)
+
+# Create vulnerability
+vuln = Vulnerability(cve="CVE-2025-0001", title="Security Advisory")
+vuln.with_product_status(known_affected=["curl-1.0"])
+vuln.add_remediation(
+    category=RemediationCategory.VENDOR_FIX,
+    details="Update to version 1.1",
+    product_ids=["curl-1.0"]
+)
+
+# Combine and save
+vex = CSAFVEX(document=doc, product_tree=tree, vulnerabilities=[vuln])
+with open("vex.json", "w") as f:
+    json.dump(vex.to_dict(), f, indent=2)
+```
+
 ### Validation (Plugins) - Python API
 
 ```python
@@ -123,7 +183,9 @@ from csaf_lib.validation.validator import Validator
 print(Validator.get_available_plugins())
 ```
 
-For detailed API documentation including working with CVSS scores, PURLs, and more examples, see [docs/csafvex-usage.md](docs/csafvex-usage.md).
+**Documentation:**
+- [Reading Documents](docs/csafvex-usage.md) - Detailed guide for parsing and accessing CSAF VEX data
+- [Creating Documents](docs/creating-documents.md) - Complete guide for creating CSAF VEX documents with the fluent API
 
 ## Verification
 

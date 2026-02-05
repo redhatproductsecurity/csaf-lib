@@ -1,5 +1,13 @@
 # CSAF VEX Builder Documentation
 
+> **⚠️ DEPRECATED**: The builder pattern is deprecated in favor of the new fluent API. See [Creating Documents](creating-documents.md) for the recommended approach.
+>
+> The builder will be removed in a future version. Please migrate to the fluent API which provides:
+> - Better transparency - see exactly what objects you're creating
+> - No hidden mutations or magic parameter injection
+> - Fluent method chaining for ergonomic document construction
+> - Runtime validation of branch/product mutual exclusion
+
 The `CSAFVEXBuilder` provides a simplified interface for constructing CSAF VEX documents with automatic defaults and smart parameter injection.
 
 ## Overview
