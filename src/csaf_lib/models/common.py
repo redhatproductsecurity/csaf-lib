@@ -7,6 +7,8 @@ import attrs
 from cvss import CVSS2, CVSS3
 from packageurl import PackageURL
 
+from csaf_lib.utils import format_datetime
+
 
 def serialize_value(inst: type, field: attrs.Attribute, value: Any) -> Any:
     """Custom value serializer for attrs.asdict().
@@ -18,7 +20,7 @@ def serialize_value(inst: type, field: attrs.Attribute, value: Any) -> Any:
 
     # Handle datetime objects
     if isinstance(value, datetime):
-        return value.isoformat()
+        return format_datetime(value)
 
     # Handle PackageURL objects
     if isinstance(value, PackageURL):

@@ -353,7 +353,7 @@ class TestDateTimeFormat:
             "document": {
                 "tracking": {
                     "initial_release_date": "2025/01/01",  # Wrong format
-                    "current_release_date": "2025-01-01T00:00:00.000Z",
+                    "current_release_date": "2025-01-01T00:00:00Z",
                 }
             }
         }

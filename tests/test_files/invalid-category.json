@@ -6,8 +6,8 @@
       "id": "INVALID-CATEGORY-001",
       "status": "draft",
       "version": "1",
-      "initial_release_date": "2025-12-03T00:00:00.000Z",
-      "current_release_date": "2025-12-03T00:00:00.000Z"
+      "initial_release_date": "2025-12-03T00:00:00Z",
+      "current_release_date": "2025-12-03T00:00:00Z"
     }
   },
   "product_tree": {},
