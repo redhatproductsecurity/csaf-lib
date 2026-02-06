@@ -16,6 +16,7 @@ from csaf_lib.models.product_tree import (
 from csaf_lib.models.vulnerability import (
     Vulnerability,
 )
+from csaf_lib.utils import format_datetime
 
 # Default values for CSAF VEX documents
 DEFAULT_CATEGORY = "csaf_vex"
@@ -173,7 +174,7 @@ class CSAFVEXBuilder:
             document_data["publisher"].setdefault("category", DEFAULT_PUBLISHER_CATEGORY)
 
         # Get current timestamp for defaults
-        now = datetime.now(timezone.utc).isoformat()
+        now = format_datetime(datetime.now(timezone.utc))
 
         # Ensure tracking exists and set defaults
         if "tracking" not in document_data:

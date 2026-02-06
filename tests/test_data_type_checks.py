@@ -15,6 +15,7 @@ from csaf_lib.verification.data_type_checks import (
     verify_cvss_vector_consistency,
     verify_cwe_id_format,
     verify_datetime_format,
+    verify_initial_date_consistency,
     verify_json_schema,
     verify_language_code_format,
     verify_mixed_versioning_prohibition,
@@ -353,7 +354,7 @@ class TestDateTimeFormat:
             "document": {
                 "tracking": {
                     "initial_release_date": "2025/01/01",  # Wrong format
-                    "current_release_date": "2025-01-01T00:00:00.000Z",
+                    "current_release_date": "2025-01-01T00:00:00Z",
                 }
             }
         }
@@ -1258,6 +1259,53 @@ class TestSoftLimitStringLength:
         }
         result = verify_soft_limit_string_length(doc)
         assert result.status == VerificationStatus.WARN
+
+
+class TestInitialDateConsistency:
+    """Test 2.16: Initial Date Consistency."""
+
+    def test_consistent_dates(self, valid_vex_document):
+        """Test that consistent dates pass."""
+        result = verify_initial_date_consistency(valid_vex_document)
+        assert result.passed
+        assert result.test_id == "2.16"
+
+    def test_inconsistent_dates(self):
+        """Test that inconsistent dates fail."""
+        doc = {
+            "document": {
+                "tracking": {
+                    "initial_release_date": "2025-01-01T00:00:00Z",
+                    "revision_history": [
+                        {
+                            "number": "1",
+                            "date": "2025-01-02T00:00:00Z",  # Different from initial
+                            "summary": "First version",
+                        }
+                    ],
+                }
+            }
+        }
+        result = verify_initial_date_consistency(doc)
+        assert result.failed
+
+    def test_no_initial_date_skips(self):
+        """Test that missing initial_release_date skips."""
+        doc = {"document": {"tracking": {}}}
+        result = verify_initial_date_consistency(doc)
+        assert result.status == VerificationStatus.SKIP
+
+    def test_no_revision_history_skips(self):
+        """Test that missing revision_history skips."""
+        doc = {
+            "document": {
+                "tracking": {
+                    "initial_release_date": "2025-01-01T00:00:00Z",
+                }
+            }
+        }
+        result = verify_initial_date_consistency(doc)
+        assert result.status == VerificationStatus.SKIP
 
 
 class TestVerifierDataTypeChecks:

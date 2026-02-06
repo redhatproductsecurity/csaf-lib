@@ -74,11 +74,11 @@ def valid_vex_document() -> dict:
                 "id": "TEST-VEX-001",
                 "status": "final",
                 "version": "1",
-                "initial_release_date": "2025-01-01T00:00:00.000Z",
-                "current_release_date": "2025-01-01T00:00:00.000Z",
+                "initial_release_date": "2025-01-01T00:00:00Z",
+                "current_release_date": "2025-01-01T00:00:00Z",
                 "revision_history": [
                     {
-                        "date": "2025-01-01T00:00:00.000Z",
+                        "date": "2025-01-01T00:00:00Z",
                         "number": "1",
                         "summary": "Initial version",
                     }
@@ -142,8 +142,8 @@ def vex_with_known_affected() -> dict:
                 "id": "TEST-VEX-002",
                 "status": "final",
                 "version": "1",
-                "initial_release_date": "2025-01-01T00:00:00.000Z",
-                "current_release_date": "2025-01-01T00:00:00.000Z",
+                "initial_release_date": "2025-01-01T00:00:00Z",
+                "current_release_date": "2025-01-01T00:00:00Z",
             },
         },
         "product_tree": {
@@ -185,8 +185,8 @@ def vex_with_known_not_affected() -> dict:
                 "id": "TEST-VEX-003",
                 "status": "final",
                 "version": "1",
-                "initial_release_date": "2025-01-01T00:00:00.000Z",
-                "current_release_date": "2025-01-01T00:00:00.000Z",
+                "initial_release_date": "2025-01-01T00:00:00Z",
+                "current_release_date": "2025-01-01T00:00:00Z",
             },
         },
         "product_tree": {
@@ -246,11 +246,11 @@ def document_with_cvss() -> dict:
                 "id": "TEST-VEX-CVSS",
                 "status": "final",
                 "version": "1",
-                "initial_release_date": "2025-01-01T00:00:00.000Z",
-                "current_release_date": "2025-01-01T00:00:00.000Z",
+                "initial_release_date": "2025-01-01T00:00:00Z",
+                "current_release_date": "2025-01-01T00:00:00Z",
                 "revision_history": [
                     {
-                        "date": "2025-01-01T00:00:00.000Z",
+                        "date": "2025-01-01T00:00:00Z",
                         "number": "1",
                         "summary": "Initial version",
                     }
@@ -315,8 +315,8 @@ def document_with_purl_and_cpe() -> dict:
                 "id": "TEST-VEX-PURL-CPE",
                 "status": "final",
                 "version": "1",
-                "initial_release_date": "2025-01-01T00:00:00.000Z",
-                "current_release_date": "2025-01-01T00:00:00.000Z",
+                "initial_release_date": "2025-01-01T00:00:00Z",
+                "current_release_date": "2025-01-01T00:00:00Z",
             },
         },
         "product_tree": {
@@ -358,8 +358,8 @@ def document_with_circular_reference() -> dict:
                 "id": "TEST-VEX-CIRCULAR",
                 "status": "final",
                 "version": "1",
-                "initial_release_date": "2025-01-01T00:00:00.000Z",
-                "current_release_date": "2025-01-01T00:00:00.000Z",
+                "initial_release_date": "2025-01-01T00:00:00Z",
+                "current_release_date": "2025-01-01T00:00:00Z",
             },
         },
         "product_tree": {
@@ -409,8 +409,8 @@ def document_with_contradicting_status() -> dict:
                 "id": "TEST-VEX-CONTRADICT",
                 "status": "final",
                 "version": "1",
-                "initial_release_date": "2025-01-01T00:00:00.000Z",
-                "current_release_date": "2025-01-01T00:00:00.000Z",
+                "initial_release_date": "2025-01-01T00:00:00Z",
+                "current_release_date": "2025-01-01T00:00:00Z",
             },
         },
         "product_tree": {

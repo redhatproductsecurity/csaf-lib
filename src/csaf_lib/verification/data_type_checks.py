@@ -1220,6 +1220,75 @@ def verify_soft_limit_string_length(document: dict[str, Any]) -> VerificationRes
         source_ref="CSAF Soft Limits",
     )
 
+def verify_initial_date_consistency(document: dict[str, Any]) -> VerificationResult:
+    """Test 2.16: Initial Date Consistency.
+
+    The value of /document/tracking/initial_release_date MUST be identical
+    to the date value in the first entry of /document/tracking/revision_history[].
+    """
+    tracking = document.get("document", {}).get("tracking", {})
+
+    initial_release_date = tracking.get("initial_release_date")
+    revision_history = tracking.get("revision_history", [])
+
+    if not initial_release_date:
+        return VerificationResult(
+            test_id="2.16",
+            test_name="Initial Date Consistency",
+            status=VerificationStatus.SKIP,
+            message="No initial_release_date found",
+            severity=VerificationSeverity.INFO,
+            source_ref="CSAF Logic",
+        )
+
+    if not revision_history:
+        return VerificationResult(
+            test_id="2.16",
+            test_name="Initial Date Consistency",
+            status=VerificationStatus.SKIP,
+            message="No revision_history found",
+            severity=VerificationSeverity.INFO,
+            source_ref="CSAF Logic",
+        )
+
+    # Sort revision history by version/number to find the first entry
+    # The first entry should be version "1" or the earliest
+    sorted_history = sorted(
+        revision_history,
+        key=lambda x: (
+            int(x.get("number", "0")) if x.get("number", "0").isdigit() else 0,
+            x.get("date", ""),
+        ),
+    )
+
+    first_revision = sorted_history[0]
+    first_revision_date = first_revision.get("date")
+
+    if first_revision_date != initial_release_date:
+        return VerificationResult(
+            test_id="2.16",
+            test_name="Initial Date Consistency",
+            status=VerificationStatus.FAIL,
+            message="initial_release_date does not match first revision date",
+            severity=VerificationSeverity.ERROR,
+            source_ref="CSAF Logic",
+            details={
+                "initial_release_date": initial_release_date,
+                "first_revision_date": first_revision_date,
+                "first_revision_number": first_revision.get("number"),
+            },
+        )
+
+    return VerificationResult(
+        test_id="2.16",
+        test_name="Initial Date Consistency",
+        status=VerificationStatus.PASS,
+        message="initial_release_date matches first revision date",
+        severity=VerificationSeverity.INFO,
+        source_ref="CSAF Logic",
+    )
+
+
 
 # Export all test functions
 ALL_DATA_TYPE_CHECKS = [
@@ -1238,4 +1307,5 @@ ALL_DATA_TYPE_CHECKS = [
     verify_soft_limit_file_size,
     verify_soft_limit_array_length,
     verify_soft_limit_string_length,
+    verify_initial_date_consistency,
 ]

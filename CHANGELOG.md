@@ -7,9 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Use ISO 8601 format without microseconds for dates
+
 ## [0.1.0b8] - 2026-02-02
 
-## Changed
+### Changed
 - Remove some default fields from document: lang, source_lang, distribution
 
 ## [0.1.0b7] - 2026-01-22
