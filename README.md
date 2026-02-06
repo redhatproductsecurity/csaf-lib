@@ -198,7 +198,6 @@ for test_id, test_name in tests.items():
 | 2.13 | File Size Soft Limit | Document should not exceed 15 MB |
 | 2.14 | Array Length Soft Limit | Arrays should not exceed 100,000 items |
 | 2.15 | String Length Soft Limit | Strings should not exceed field-specific limits |
-| 2.16 | Initial Date Consistency | initial_release_date must match first revision |
 
 ## Contributing
 

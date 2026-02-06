@@ -1,6 +1,6 @@
 """Tests for Test Set 2: Data Type Checking.
 
-This module tests the data type checking verification functions (2.1-2.16).
+This module tests the data type checking verification functions (2.1-2.15).
 """
 
 import json
@@ -15,7 +15,6 @@ from csaf_lib.verification.data_type_checks import (
     verify_cvss_vector_consistency,
     verify_cwe_id_format,
     verify_datetime_format,
-    verify_initial_date_consistency,
     verify_json_schema,
     verify_language_code_format,
     verify_mixed_versioning_prohibition,
@@ -1261,53 +1260,6 @@ class TestSoftLimitStringLength:
         assert result.status == VerificationStatus.WARN
 
 
-class TestInitialDateConsistency:
-    """Test 2.16: Initial Date Consistency."""
-
-    def test_consistent_dates(self, valid_vex_document):
-        """Test that consistent dates pass."""
-        result = verify_initial_date_consistency(valid_vex_document)
-        assert result.passed
-        assert result.test_id == "2.16"
-
-    def test_inconsistent_dates(self):
-        """Test that inconsistent dates fail."""
-        doc = {
-            "document": {
-                "tracking": {
-                    "initial_release_date": "2025-01-01T00:00:00Z",
-                    "revision_history": [
-                        {
-                            "number": "1",
-                            "date": "2025-01-02T00:00:00Z",  # Different from initial
-                            "summary": "First version",
-                        }
-                    ],
-                }
-            }
-        }
-        result = verify_initial_date_consistency(doc)
-        assert result.failed
-
-    def test_no_initial_date_skips(self):
-        """Test that missing initial_release_date skips."""
-        doc = {"document": {"tracking": {}}}
-        result = verify_initial_date_consistency(doc)
-        assert result.status == VerificationStatus.SKIP
-
-    def test_no_revision_history_skips(self):
-        """Test that missing revision_history skips."""
-        doc = {
-            "document": {
-                "tracking": {
-                    "initial_release_date": "2025-01-01T00:00:00Z",
-                }
-            }
-        }
-        result = verify_initial_date_consistency(doc)
-        assert result.status == VerificationStatus.SKIP
-
-
 class TestVerifierDataTypeChecks:
     """Integration tests for the Verifier class with data type checks."""
 
@@ -1316,10 +1268,10 @@ class TestVerifierDataTypeChecks:
         verifier = Verifier(valid_vex_document)
         report = verifier.run_data_type_checks()
 
-        assert report.total_tests == 16
+        assert report.total_tests == 15
         # Check that all data type tests ran
         test_ids = {r.test_id for r in report.results}
-        expected_ids = {f"2.{i}" for i in range(1, 17)}
+        expected_ids = {f"2.{i}" for i in range(1, 16)}
         assert test_ids == expected_ids
 
     def test_run_all_on_valid_document(self, valid_vex_document):
@@ -1327,7 +1279,7 @@ class TestVerifierDataTypeChecks:
         verifier = Verifier(valid_vex_document)
         report = verifier.run_all()
 
-        assert report.total_tests == 30  # 14 CSAF + 16 data type
+        assert report.total_tests == 29  # 14 CSAF + 15 data type
         assert report.document_id == "TEST-VEX-001"
 
     def test_from_json_string(self, valid_vex_document):
@@ -1337,7 +1289,7 @@ class TestVerifierDataTypeChecks:
 
         assert verifier.document_id == "TEST-VEX-001"
         report = verifier.run_all()
-        assert report.total_tests == 30
+        assert report.total_tests == 29
 
     def test_from_file(self, test_files_dir):
         """Test creating Verifier from file."""
@@ -1345,16 +1297,16 @@ class TestVerifierDataTypeChecks:
 
         assert verifier.document_id == "2022-EVD-UC-05-001"
         report = verifier.run_all()
-        assert report.total_tests == 30
+        assert report.total_tests == 29
 
     def test_run_specific_tests(self, valid_vex_document):
         """Test running specific tests by ID."""
         verifier = Verifier(valid_vex_document)
-        report = verifier.run_tests(["1.1", "2.5", "2.16"])
+        report = verifier.run_tests(["1.1", "2.5", "2.15"])
 
         assert report.total_tests == 3
         test_ids = {r.test_id for r in report.results}
-        assert test_ids == {"1.1", "2.5", "2.16"}
+        assert test_ids == {"1.1", "2.5", "2.15"}
 
     def test_report_to_dict(self, valid_vex_document):
         """Test converting report to dictionary."""
@@ -1364,4 +1316,4 @@ class TestVerifierDataTypeChecks:
         report_dict = report.to_dict()
         assert "summary" in report_dict
         assert "results" in report_dict
-        assert report_dict["summary"]["total"] == 30
+        assert report_dict["summary"]["total"] == 29
