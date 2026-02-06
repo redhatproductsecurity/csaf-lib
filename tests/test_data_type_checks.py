@@ -1,6 +1,6 @@
 """Tests for Test Set 2: Data Type Checking.
 
-This module tests the data type checking verification functions (2.1-2.16).
+This module tests the data type checking verification functions (2.1-2.15).
 """
 
 import json

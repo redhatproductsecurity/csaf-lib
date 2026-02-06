@@ -1,6 +1,6 @@
 """Test Set 2: Data Type Checking Tests.
 
-This module implements tests 2.1-2.16 for verifying data format compliance,
+This module implements tests 2.1-2.15 for verifying data format compliance,
 patterns, and schema constraints derived from CSAF Section 3 (Schema Elements)
 and Section 6.1 (Mandatory Tests).
 """
