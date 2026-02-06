@@ -6,6 +6,7 @@ import attrs
 from packageurl import PackageURL
 
 from csaf_lib.models.common import SerializableModel
+from csaf_lib.models.enums import BranchCategory, RelationshipCategory
 
 # @attrs.define
 # class FileHash:
@@ -132,7 +133,7 @@ class Branch(SerializableModel):
     """Represents a branch in the hierarchical product tree structure."""
 
     # Required fields per CSAF spec (nullable to allow parsing invalid documents)
-    category: str | None = attrs.field(default=None)
+    category: BranchCategory | None = attrs.field(default=None)
     name: str | None = attrs.field(default=None)
 
     # Optional fields - note: must have either branches OR product (not both)
@@ -144,9 +145,10 @@ class Branch(SerializableModel):
         """Create a Branch from a dictionary."""
         branches_data = data.get("branches", [])
         product_data = data.get("product")
+        category_str = data.get("category")
 
         return cls(
-            category=data.get("category"),
+            category=BranchCategory(category_str) if category_str is not None else None,
             name=data.get("name"),
             branches=[Branch.from_dict(b) for b in branches_data],
             product=FullProductName.from_dict(product_data) if product_data is not None else None,
@@ -160,13 +162,113 @@ class Branch(SerializableModel):
             result["branches"] = branches_value
         return result
 
+    def add_branch(self, category: BranchCategory, name: str) -> "Branch":
+        """Add a nested branch and return it for chaining.
+
+        Args:
+            category: Branch category
+            name: Branch name
+
+        Returns:
+            The created branch
+
+        Raises:
+            ValueError: If product is already set
+        """
+        if self.product is not None:
+            raise ValueError(
+                "Cannot add branches: this branch already has a product. "
+                "Branch must have either branches OR product, not both."
+            )
+        branch = Branch(category=category, name=name)
+        self.branches.append(branch)
+        return branch
+
+    def with_product(
+        self,
+        name: str,
+        product_id: str,
+        helper_cpe: str | None = None,
+        helper_purl: str | None = None,
+    ) -> "Branch":
+        """Set the product for this branch (makes it a leaf node).
+
+        Args:
+            name: Product name
+            product_id: Product ID
+            helper_cpe: CPE identifier
+            helper_purl: PURL identifier
+
+        Returns:
+            Self for method chaining
+
+        Raises:
+            ValueError: If branches already exist
+        """
+        if self.branches:
+            raise ValueError(
+                "Cannot set product: this branch already has nested branches. "
+                "Branch must have either branches OR product, not both."
+            )
+
+        helper = None
+        if helper_cpe is not None or helper_purl is not None:
+            helper = ProductIdentificationHelper(cpe=helper_cpe, purl=helper_purl)
+
+        self.product = FullProductName(
+            name=name,
+            product_id=product_id,
+            product_identification_helper=helper,
+        )
+        return self
+
+    def add_product_branch(
+        self,
+        category: BranchCategory,
+        name: str,
+        product_name: str,
+        product_id: str,
+        helper_cpe: str | None = None,
+        helper_purl: str | None = None,
+    ) -> "Branch":
+        """Create and add a nested branch with a product (creates leaf node).
+
+        Args:
+            category: Branch category
+            name: Branch name
+            product_name: Product name
+            product_id: Product ID
+            helper_cpe: CPE identifier
+            helper_purl: PURL identifier
+
+        Returns:
+            Self for method chaining
+
+        Raises:
+            ValueError: If product is already set
+        """
+        if self.product is not None:
+            raise ValueError(
+                "Cannot add branches: this branch already has a product. "
+                "Branch must have either branches OR product, not both."
+            )
+
+        branch = Branch(category=category, name=name).with_product(
+            name=product_name,
+            product_id=product_id,
+            helper_cpe=helper_cpe,
+            helper_purl=helper_purl,
+        )
+        self.branches.append(branch)
+        return self
+
 
 @attrs.define
 class Relationship(SerializableModel):
     """Establishes a relationship between two products."""
 
     # Required fields per CSAF spec (nullable to allow parsing invalid documents)
-    category: str | None = attrs.field(default=None)
+    category: RelationshipCategory | None = attrs.field(default=None)
     full_product_name: FullProductName | None = attrs.field(default=None)
     product_reference: str | None = attrs.field(default=None)
     relates_to_product_reference: str | None = attrs.field(default=None)
@@ -175,9 +277,10 @@ class Relationship(SerializableModel):
     def from_dict(cls, data: dict[str, Any]) -> "Relationship":
         """Create a Relationship from a dictionary."""
         full_product_name_data = data.get("full_product_name")
+        category_str = data.get("category")
 
         return cls(
-            category=data.get("category"),
+            category=RelationshipCategory(category_str) if category_str is not None else None,
             full_product_name=FullProductName.from_dict(full_product_name_data)
             if full_product_name_data is not None
             else None,
@@ -235,3 +338,58 @@ class ProductTree(SerializableModel):
             # full_product_names=[FullProductName.from_dict(p) for p in full_product_names_data],
             # product_groups=[ProductGroup.from_dict(g) for g in product_groups_data],
         )
+
+    def add_branch(self, category: BranchCategory, name: str) -> Branch:
+        """Add a branch to the product tree and return it for chaining.
+
+        Args:
+            category: Branch category
+            name: Branch name
+
+        Returns:
+            The created branch
+        """
+        branch = Branch(category=category, name=name)
+        self.branches.append(branch)
+        return branch
+
+    def add_relationship(
+        self,
+        category: RelationshipCategory,
+        product_reference: str,
+        relates_to_product_reference: str,
+        full_product_name: str,
+        full_product_id: str,
+        helper_cpe: str | None = None,
+        helper_purl: str | None = None,
+    ) -> "ProductTree":
+        """Add a relationship between two products.
+
+        Args:
+            category: Relationship category
+            product_reference: Product reference (component product ID)
+            relates_to_product_reference: Related product reference (parent product ID)
+            full_product_name: Full product name for the relationship
+            full_product_id: Full product ID for the relationship
+            helper_cpe: CPE identifier for the relationship product
+            helper_purl: PURL identifier for the relationship product
+
+        Returns:
+            Self for method chaining
+        """
+        helper = None
+        if helper_cpe is not None or helper_purl is not None:
+            helper = ProductIdentificationHelper(cpe=helper_cpe, purl=helper_purl)
+
+        relationship = Relationship(
+            category=category,
+            product_reference=product_reference,
+            relates_to_product_reference=relates_to_product_reference,
+            full_product_name=FullProductName(
+                name=full_product_name,
+                product_id=full_product_id,
+                product_identification_helper=helper,
+            ),
+        )
+        self.relationships.append(relationship)
+        return self

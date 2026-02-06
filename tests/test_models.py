@@ -202,7 +202,7 @@ class TestBranchesFieldOrdering:
             {
                 "name": "ACME",
                 "category": "vendor",
-                "branches": [{"category": "product", "name": "Widget"}],
+                "branches": [{"category": "product_name", "name": "Widget"}],
             }
         )
         result = branch.to_dict()

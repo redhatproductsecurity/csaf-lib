@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Fluent API for creating CSAF VEX documents (see `docs/creating-documents.md`)
+  - Document: `with_publisher()`, `with_tracking()`, `add_note()`, `add_reference()`, etc.
+  - ProductTree: `add_branch()`, `add_relationship()`
+  - Branch: `add_branch()`, `with_product()`, `add_product_branch()`
+  - Vulnerability: `with_cwe()`, `with_product_status()`, `add_remediation()`, `add_score()`, etc.
+- `CSAFVersion` enum for type-safe CSAF version specification
+
+### Deprecated
+- `CSAFVEXBuilder` - Use the new fluent API instead
+
 ### Changed
 - Use ISO 8601 format without microseconds for dates
 
