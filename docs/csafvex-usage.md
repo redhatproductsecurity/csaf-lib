@@ -173,12 +173,36 @@ with open("output.json", "w") as f:
     json.dump(data, f, indent=2)
 ```
 
+### CVSS Verbosity
+
+CVSS scores can be serialized at three verbosity levels using `CVSSVerbosity`:
+
+- **`FULL`** - All fields from the CVSS library (`as_json()`)
+- **`MINIMAL`** - Base metrics only (`as_json(minimal=True)`) - default
+- **`REQUIRED`** - Only fields required by the CVSS schema: `version`, `vectorString`, `baseScore`, and `baseSeverity`
+
+```python
+from csaf_lib.models import CSAFVEX, CVSSVerbosity, Score
+
+# Set on CSAFVEX - propagates to all scores on to_dict()
+vex = CSAFVEX(document=doc, cvss_verbosity=CVSSVerbosity.REQUIRED)
+vex.to_dict()
+
+# Or set directly on a Score for standalone use
+score = Score(
+    products=["RHEL-8:curl-1.0"],
+    cvss_v3=cvss_obj,
+    cvss_verbosity=CVSSVerbosity.REQUIRED,
+)
+score.to_dict()
+```
+
 ### Serialization Notes
 
 The `to_dict()` method automatically handles:
 - Converting `datetime` objects to ISO format strings
 - Converting `PackageURL` objects to strings
-- Converting `CVSS2`/`CVSS3` objects to their JSON representation
+- Converting `CVSS2`/`CVSS3` objects to their JSON representation (verbosity controlled by `cvss_verbosity`)
 - Filtering out `None` values and empty lists
 - Recursively serializing nested objects
 
