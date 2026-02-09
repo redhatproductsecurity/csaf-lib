@@ -14,6 +14,7 @@ from csaf_lib.models.enums import (
     TLPLabel,
     TrackingStatus,
 )
+from csaf_lib.utils import ensure_datetime
 
 
 @attrs.define
@@ -125,16 +126,15 @@ class Generator(SerializableModel):
     engine: Engine | None = attrs.field(default=None)
 
     # Optional fields (CSAF spec order)
-    date: datetime | None = attrs.field(default=None)
+    date: str | datetime | None = attrs.field(default=None, converter=ensure_datetime)
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "Generator":
         """Create a Generator from a dictionary."""
         engine_data = data.get("engine", {})
-        date_str = data.get("date")
         return cls(
             engine=Engine.from_dict(engine_data) if engine_data is not None else None,
-            date=datetime.fromisoformat(date_str) if date_str is not None else None,
+            date=data.get("date"),
         )
 
 
@@ -143,7 +143,7 @@ class Revision(SerializableModel):
     """Represents a revision in the document history."""
 
     # Required fields per CSAF spec (nullable to allow parsing invalid documents)
-    date: datetime | None = attrs.field(default=None)
+    date: str | datetime | None = attrs.field(default=None, converter=ensure_datetime)
     number: str | None = attrs.field(default=None)
     summary: str | None = attrs.field(default=None)
 
@@ -153,9 +153,8 @@ class Revision(SerializableModel):
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "Revision":
         """Create a Revision from a dictionary."""
-        date_str = data.get("date")
         return cls(
-            date=datetime.fromisoformat(date_str) if date_str is not None else None,
+            date=data.get("date"),
             number=data.get("number"),
             summary=data.get("summary"),
             legacy_version=data.get("legacy_version"),
@@ -170,8 +169,12 @@ class Tracking(SerializableModel):
     id: str | None = attrs.field(default=None)
     status: TrackingStatus | None = attrs.field(default=None)
     version: str | None = attrs.field(default=None)
-    current_release_date: datetime | None = attrs.field(default=None)
-    initial_release_date: datetime | None = attrs.field(default=None)
+    current_release_date: str | datetime | None = attrs.field(
+        default=None, converter=ensure_datetime
+    )
+    initial_release_date: str | datetime | None = attrs.field(
+        default=None, converter=ensure_datetime
+    )
     revision_history: list[Revision] = attrs.field(factory=list)
 
     # Optional fields (CSAF spec order)
@@ -184,20 +187,14 @@ class Tracking(SerializableModel):
         """Create a Tracking from a dictionary."""
         revision_history_data = data.get("revision_history", [])
         generator_data = data.get("generator")
-        current_release_date_str = data.get("current_release_date")
-        initial_release_date_str = data.get("initial_release_date")
         status_str = data.get("status")
 
         return cls(
             id=data.get("id"),
             status=TrackingStatus(status_str) if status_str is not None else None,
             version=data.get("version"),
-            current_release_date=datetime.fromisoformat(current_release_date_str)
-            if current_release_date_str is not None
-            else None,
-            initial_release_date=datetime.fromisoformat(initial_release_date_str)
-            if initial_release_date_str is not None
-            else None,
+            current_release_date=data.get("current_release_date"),
+            initial_release_date=data.get("initial_release_date"),
             revision_history=[Revision.from_dict(r) for r in revision_history_data],
             generator=Generator.from_dict(generator_data) if generator_data is not None else None,
             # aliases=data.get("aliases", []),
@@ -294,11 +291,11 @@ class Document(SerializableModel):
         id: str,
         status: TrackingStatus | None = None,
         version: str | None = None,
-        current_release_date: datetime | None = None,
-        initial_release_date: datetime | None = None,
+        current_release_date: str | datetime | None = None,
+        initial_release_date: str | datetime | None = None,
         generator_engine_name: str | None = None,
         generator_engine_version: str | None = None,
-        generator_date: datetime | None = None,
+        generator_date: str | datetime | None = None,
         revision_history: list[Revision] | None = None,
     ) -> "Document":
         """Set the tracking information for this document.
@@ -307,11 +304,11 @@ class Document(SerializableModel):
             id: Tracking ID
             status: Tracking status
             version: Tracking version
-            current_release_date: Current release date
-            initial_release_date: Initial release date
+            current_release_date: Current release date (datetime object or ISO format string)
+            initial_release_date: Initial release date (datetime object or ISO format string)
             generator_engine_name: Generator engine name
             generator_engine_version: Generator engine version
-            generator_date: Generator date
+            generator_date: Generator date (datetime object or ISO format string)
             revision_history: List of revisions
 
         Returns:
@@ -321,15 +318,15 @@ class Document(SerializableModel):
         if generator_engine_name is not None:
             generator = Generator(
                 engine=Engine(name=generator_engine_name, version=generator_engine_version),
-                date=generator_date,
+                date=ensure_datetime(generator_date),
             )
 
         self.tracking = Tracking(
             id=id,
             status=status,
             version=version,
-            current_release_date=current_release_date,
-            initial_release_date=initial_release_date,
+            current_release_date=ensure_datetime(current_release_date),
+            initial_release_date=ensure_datetime(initial_release_date),
             revision_history=revision_history if revision_history is not None else [],
             generator=generator,
         )
@@ -338,7 +335,7 @@ class Document(SerializableModel):
     def add_tracking_revision(
         self,
         number: str,
-        date: datetime,
+        date: str | datetime,
         summary: str,
         legacy_version: str | None = None,
     ) -> "Document":
@@ -346,7 +343,7 @@ class Document(SerializableModel):
 
         Args:
             number: Revision number
-            date: Revision date
+            date: Revision date (datetime object or ISO format string)
             summary: Revision summary
             legacy_version: Legacy version
 
@@ -360,7 +357,12 @@ class Document(SerializableModel):
             raise ValueError("Cannot add revision: tracking not set. Call with_tracking() first.")
 
         self.tracking.revision_history.append(
-            Revision(number=number, date=date, summary=summary, legacy_version=legacy_version)
+            Revision(
+                number=number,
+                date=ensure_datetime(date),
+                summary=summary,
+                legacy_version=legacy_version,
+            )
         )
         return self
 

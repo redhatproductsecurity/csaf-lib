@@ -170,6 +170,22 @@ doc.with_tracking(
 
 Parameters with `generator_` prefix are flattened from the nested `Generator` object for transparency.
 
+**Note on datetime parameters:** All datetime parameters accept either `datetime` objects or ISO 8601 format strings:
+
+```python
+# Using datetime objects
+doc.with_tracking(
+    initial_release_date=datetime(2025, 1, 1, tzinfo=timezone.utc),
+    current_release_date=datetime.now(timezone.utc)
+)
+
+# Using ISO format strings
+doc.with_tracking(
+    initial_release_date="2025-01-01T00:00:00+00:00",
+    current_release_date="2025-02-09T12:30:00Z"
+)
+```
+
 #### Adding Revisions Incrementally
 
 ```python
