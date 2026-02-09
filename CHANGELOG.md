@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0b10] - 2026-02-09
+
 ### Added
 - `CVSSVerbosity` enum to control CVSS output verbosity (`FULL`, `MINIMAL`, `REQUIRED`)
   - Set on `CSAFVEX` to apply globally or on individual `Score` objects for standalone use
