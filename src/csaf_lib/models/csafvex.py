@@ -6,7 +6,7 @@ from typing import Any
 
 import attrs
 
-from csaf_lib.models.common import SerializableModel, serialize_value
+from csaf_lib.models.common import CVSSVerbosity, SerializableModel
 from csaf_lib.models.document import Document
 from csaf_lib.models.product_tree import ProductTree
 from csaf_lib.models.vulnerability import Vulnerability
@@ -20,7 +20,10 @@ class CSAFVEX(SerializableModel):
     product_tree: ProductTree | None = attrs.field(default=None)
     vulnerabilities: list[Vulnerability] = attrs.field(factory=list)
 
-    raw_data: dict[str, Any] | None = attrs.field(default=None, repr=False)
+    cvss_verbosity: CVSSVerbosity = attrs.field(
+        default=CVSSVerbosity.MINIMAL, metadata={"export": False}
+    )
+    raw_data: dict[str, Any] | None = attrs.field(default=None, metadata={"export": False})
 
     @classmethod
     def from_file(cls, file_path: str | Path) -> "CSAFVEX":
@@ -54,9 +57,8 @@ class CSAFVEX(SerializableModel):
         )
 
     def to_dict(self) -> dict[str, Any]:
-        """Convert to a dictionary, excluding fields marked with repr=False and empty lists."""
-        return attrs.asdict(
-            self,
-            filter=lambda attr, value: value is not None and value != [] and attr.repr,
-            value_serializer=serialize_value,
-        )
+        """Convert to a dictionary, excluding non-exportable fields and empty lists."""
+        for vuln in self.vulnerabilities:
+            for score in vuln.scores:
+                score.cvss_verbosity = self.cvss_verbosity
+        return super().to_dict()

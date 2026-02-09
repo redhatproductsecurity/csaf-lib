@@ -12,6 +12,17 @@ from csaf_lib.models.enums import NoteCategory, ReferenceCategory
 from csaf_lib.utils import format_datetime
 
 
+class CVSSVerbosity(Enum):
+    """CVSS output verbosity levels."""
+
+    FULL = "full"  # All fields from as_json()
+    MINIMAL = "minimal"  # Fields from as_json(minimal=True)
+    REQUIRED = "required"  # Only fields required by the CVSS schema
+
+
+_CVSS_REQUIRED_FIELDS = {"version", "vectorString", "baseScore", "baseSeverity"}
+
+
 def serialize_value(inst: type, field: attrs.Attribute, value: Any) -> Any:
     """Custom value serializer for attrs.asdict().
 
@@ -32,9 +43,15 @@ def serialize_value(inst: type, field: attrs.Attribute, value: Any) -> Any:
     if isinstance(value, PackageURL):
         return value.to_string()
 
-    # Handle CVSS objects - use built-in as_json method
+    # Handle CVSS objects - verbosity controlled by inst.cvss_verbosity
     if isinstance(value, (CVSS2, CVSS3)):
-        return value.as_json(minimal=True)
+        verbosity = getattr(inst, "cvss_verbosity", CVSSVerbosity.MINIMAL)
+        if verbosity == CVSSVerbosity.FULL:
+            return value.as_json()
+        result = value.as_json(minimal=True)
+        if verbosity == CVSSVerbosity.REQUIRED:
+            return {k: v for k, v in result.items() if k in _CVSS_REQUIRED_FIELDS}
+        return result
 
     # Handle lists - recursively process items
     if isinstance(value, list):
@@ -63,7 +80,9 @@ class SerializableModel:
         """
         result = attrs.asdict(
             self,
-            filter=lambda attr, value: value is not None and value != [],
+            filter=lambda attr, value: value is not None
+            and value != []
+            and attr.metadata.get("export", True),
             value_serializer=serialize_value,
         )
         return dict(sorted(result.items()))

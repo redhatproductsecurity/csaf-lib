@@ -409,7 +409,9 @@ vuln.add_score(
 vuln.add_score(
     products=["RHEL-8:curl-1.0"],
     cvss_v2_vector="AV:N/AC:M/Au:N/C:P/I:P/A:N"
-)
+```
+
+CVSS output verbosity can be controlled via `CVSSVerbosity` — set it on `CSAFVEX` to apply globally, or on individual `Score` objects. See [CVSS Verbosity](csafvex-usage.md#cvss-verbosity) for details.
 ```
 
 #### Adding Flags

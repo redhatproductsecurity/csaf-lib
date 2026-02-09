@@ -1,6 +1,6 @@
 """Data models for CSAF VEX."""
 
-from csaf_lib.models.common import Acknowledgment, Note, Reference
+from csaf_lib.models.common import Acknowledgment, CVSSVerbosity, Note, Reference
 from csaf_lib.models.csafvex import CSAFVEX
 from csaf_lib.models.document import (
     TLP,
@@ -59,6 +59,7 @@ __all__ = [
     "Branch",
     "BranchCategory",
     "CSAFVersion",
+    "CVSSVerbosity",
     "Distribution",
     "Document",
     "Engine",
