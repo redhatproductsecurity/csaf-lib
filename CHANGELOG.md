@@ -7,13 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0b11] - 2026-02-09
+
+### Added
+- All datetime parameters now accept ISO 8601 format strings in addition to `datetime` objects
+  - Applies to fluent API methods (`with_tracking()`, `add_remediation()`, etc.) and model constructors
+
 ## [0.1.0b10] - 2026-02-09
 
 ### Added
 - `CVSSVerbosity` enum to control CVSS output verbosity (`FULL`, `MINIMAL`, `REQUIRED`)
   - Set on `CSAFVEX` to apply globally or on individual `Score` objects for standalone use
-- All datetime parameters now accept ISO 8601 format strings in addition to `datetime` objects
-  - Applies to fluent API methods (`with_tracking()`, `add_remediation()`, etc.) and model constructors
 
 ### Changed
 - Use `metadata={"export": False}` instead of `repr=False` to exclude fields from serialization
