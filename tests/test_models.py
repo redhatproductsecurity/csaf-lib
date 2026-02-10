@@ -231,3 +231,282 @@ class TestBranchesFieldOrdering:
         keys = list(result.keys())
 
         assert keys == ["branches", "relationships"]
+
+
+class TestListSorting:
+    """Test that lists are sorted deterministically during serialization."""
+
+    def test_branches_sorted_by_name(self):
+        """Test that branches are sorted alphabetically by name."""
+        from csaf_lib.models.product_tree import ProductTree
+
+        tree = ProductTree.from_dict(
+            {
+                "branches": [
+                    {"category": "vendor", "name": "Zebra Corp"},
+                    {"category": "vendor", "name": "Acme Inc"},
+                    {"category": "vendor", "name": "MegaCorp"},
+                ],
+            }
+        )
+        result = tree.to_dict()
+        names = [b["name"] for b in result["branches"]]
+
+        assert names == ["Acme Inc", "MegaCorp", "Zebra Corp"]
+
+    def test_string_lists_sorted(self):
+        """Test that plain string lists are sorted lexicographically."""
+        from csaf_lib.models.vulnerability import ProductStatus, Vulnerability
+
+        vuln = Vulnerability(
+            cve="CVE-2025-0001",
+            product_status=ProductStatus(
+                known_affected=["prod-c", "prod-a", "PROD-B"],
+            ),
+        )
+        result = vuln.to_dict()
+        products = result["product_status"]["known_affected"]
+
+        # Case-insensitive sort
+        assert products == ["prod-a", "PROD-B", "prod-c"]
+
+    def test_vulnerabilities_sorted_by_cve(self):
+        """Test that vulnerabilities are sorted by CVE."""
+        data = {
+            "document": {
+                "category": "csaf_vex",
+                "csaf_version": "2.0",
+                "title": "Test",
+                "publisher": {
+                    "category": "vendor",
+                    "name": "Test",
+                    "namespace": "https://test.com",
+                },
+                "tracking": {
+                    "id": "TEST-001",
+                    "status": "final",
+                    "version": "1",
+                    "initial_release_date": "2025-01-01T00:00:00Z",
+                    "current_release_date": "2025-01-01T00:00:00Z",
+                },
+            },
+            "vulnerabilities": [
+                {"cve": "CVE-2025-0003"},
+                {"cve": "CVE-2025-0001"},
+                {"cve": "CVE-2025-0002"},
+            ],
+        }
+
+        csafvex = CSAFVEX.from_dict(data)
+        result = csafvex.to_dict()
+        cves = [v["cve"] for v in result["vulnerabilities"]]
+
+        assert cves == ["CVE-2025-0001", "CVE-2025-0002", "CVE-2025-0003"]
+
+    def test_notes_sorted_by_title_then_category(self):
+        """Test that notes use title as primary sort key, category as fallback."""
+        from csaf_lib.models.common import Note
+        from csaf_lib.models.enums import NoteCategory
+
+        notes = [
+            Note(category=NoteCategory.DESCRIPTION, text="Text 1", title=None),
+            Note(category=NoteCategory.SUMMARY, text="Text 2", title="Alpha"),
+            Note(category=NoteCategory.DETAILS, text="Text 3", title=None),
+            Note(category=NoteCategory.GENERAL, text="Text 4", title="Beta"),
+        ]
+
+        # Simulate serialization through a parent object
+        from csaf_lib.models.document import Document
+
+        doc = Document(
+            category="csaf_vex",
+            csaf_version="2.0",
+            title="Test",
+            notes=notes,
+        )
+        result = doc.to_dict()
+        note_keys = [(n.get("title"), n.get("category")) for n in result["notes"]]
+
+        # Expected order: "Alpha", "Beta", then by category (description before details)
+        assert note_keys == [
+            ("Alpha", "summary"),
+            ("Beta", "general"),
+            (None, "description"),
+            (None, "details"),
+        ]
+
+    def test_nested_branches_sorted(self):
+        """Test that deeply nested branches are all sorted by category then name."""
+        from csaf_lib.models.product_tree import ProductTree
+
+        tree = ProductTree.from_dict(
+            {
+                "branches": [
+                    {
+                        "category": "vendor",
+                        "name": "Zebra",
+                        "branches": [
+                            {"category": "product_name", "name": "Widget B"},
+                            {"category": "product_name", "name": "Widget A"},
+                        ],
+                    },
+                    {
+                        "category": "vendor",
+                        "name": "Acme",
+                        "branches": [
+                            {"category": "product_name", "name": "Gadget Z"},
+                            {"category": "product_name", "name": "Gadget A"},
+                        ],
+                    },
+                ],
+            }
+        )
+        result = tree.to_dict()
+
+        # Top-level branches sorted (same category, so sorted by name)
+        assert result["branches"][0]["name"] == "Acme"
+        assert result["branches"][1]["name"] == "Zebra"
+
+        # Nested branches sorted
+        assert result["branches"][0]["branches"][0]["name"] == "Gadget A"
+        assert result["branches"][0]["branches"][1]["name"] == "Gadget Z"
+        assert result["branches"][1]["branches"][0]["name"] == "Widget A"
+        assert result["branches"][1]["branches"][1]["name"] == "Widget B"
+
+    def test_branches_sorted_by_category_then_name(self):
+        """Test that branches are sorted by category first, then by name."""
+        from csaf_lib.models.product_tree import ProductTree
+
+        tree = ProductTree.from_dict(
+            {
+                "branches": [
+                    {
+                        "category": "vendor",
+                        "name": "Acme",
+                        "branches": [
+                            {"category": "product_version", "name": "2.0"},
+                            {"category": "product_name", "name": "Widget"},
+                            {"category": "product_version", "name": "1.0"},
+                            {"category": "product_name", "name": "Gadget"},
+                        ],
+                    },
+                    {
+                        "category": "product_family",
+                        "name": "Enterprise",
+                    },
+                ],
+            }
+        )
+        result = tree.to_dict()
+
+        # Top-level: product_family < vendor (alphabetical category)
+        assert result["branches"][0]["category"] == "product_family"
+        assert result["branches"][0]["name"] == "Enterprise"
+        assert result["branches"][1]["category"] == "vendor"
+        assert result["branches"][1]["name"] == "Acme"
+
+        # Nested: product_name < product_version, then by name within each category
+        nested = result["branches"][1]["branches"]
+        assert nested[0]["category"] == "product_name"
+        assert nested[0]["name"] == "Gadget"
+        assert nested[1]["category"] == "product_name"
+        assert nested[1]["name"] == "Widget"
+        assert nested[2]["category"] == "product_version"
+        assert nested[2]["name"] == "1.0"
+        assert nested[3]["category"] == "product_version"
+        assert nested[3]["name"] == "2.0"
+
+    def test_leaf_branches_sorted_by_product_id(self):
+        """Test that leaf branches sort by product.product_id when available."""
+        from csaf_lib.models.product_tree import ProductTree
+
+        tree = ProductTree.from_dict(
+            {
+                "branches": [
+                    {
+                        "category": "vendor",
+                        "name": "Acme",
+                        "branches": [
+                            {
+                                "category": "product_name",
+                                "name": "Widget",
+                                "product": {
+                                    "name": "Acme Widget",
+                                    "product_id": "CSAFPID-0002",
+                                },
+                            },
+                            {
+                                "category": "product_name",
+                                "name": "Gadget",
+                                "product": {
+                                    "name": "Acme Gadget",
+                                    "product_id": "CSAFPID-0001",
+                                },
+                            },
+                            {
+                                "category": "product_name",
+                                "name": "Alpha Tool",
+                            },
+                        ],
+                    },
+                ],
+            }
+        )
+        result = tree.to_dict()
+        nested = result["branches"][0]["branches"]
+
+        # "Alpha Tool" has no product_id, sorts by name: "alpha tool"
+        # "Gadget" has product_id "CSAFPID-0001", sorts by that
+        # "Widget" has product_id "CSAFPID-0002", sorts by that
+        # All share category "product_name", so sorted by name/product_id
+        assert nested[0]["name"] == "Alpha Tool"
+        assert nested[1]["name"] == "Gadget"
+        assert nested[1]["product"]["product_id"] == "CSAFPID-0001"
+        assert nested[2]["name"] == "Widget"
+        assert nested[2]["product"]["product_id"] == "CSAFPID-0002"
+
+    def test_revisions_sorted_by_number(self):
+        """Test that revisions are sorted by number."""
+        from csaf_lib.models.document import Revision, Tracking
+
+        tracking = Tracking(
+            id="TEST-001",
+            status="final",
+            version="3",
+            revision_history=[
+                Revision(date="2025-03-01T00:00:00Z", number="3", summary="Third"),
+                Revision(date="2025-01-01T00:00:00Z", number="1", summary="First"),
+                Revision(date="2025-02-01T00:00:00Z", number="2", summary="Second"),
+            ],
+        )
+        result = tracking.to_dict()
+        numbers = [r["number"] for r in result["revision_history"]]
+
+        assert numbers == ["1", "2", "3"]
+
+    def test_references_sorted_by_url(self):
+        """Test that references are sorted by URL."""
+        from csaf_lib.models.common import Reference
+
+        refs = [
+            Reference(summary="Third", url="https://z.example.com"),
+            Reference(summary="First", url="https://a.example.com"),
+            Reference(summary="Second", url="https://m.example.com"),
+        ]
+
+        from csaf_lib.models.document import Document
+
+        doc = Document(
+            category="csaf_vex",
+            csaf_version="2.0",
+            title="Test",
+            references=refs,
+        )
+        result = doc.to_dict()
+        urls = [r["url"] for r in result["references"]]
+
+        assert urls == [
+            "https://a.example.com",
+            "https://m.example.com",
+            "https://z.example.com",
+        ]
