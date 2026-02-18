@@ -22,6 +22,87 @@ class CVSSVerbosity(Enum):
 
 _CVSS_REQUIRED_FIELDS = {"version", "vectorString", "baseScore", "baseSeverity"}
 
+# Sort keys for list sorting during serialization
+# Maps class name to (primary_key, fallback_key) or just primary_key
+_LIST_SORT_KEYS: dict[str, str | tuple[str, str]] = {
+    "Flag": "label",
+    "Note": ("title", "category"),  # title first, category as fallback
+    "Reference": "url",
+    "Remediation": "category",
+    "ID": "system_name",
+    "Score": "products",  # First element of products list
+    "Threat": "category",
+    "Relationship": "product_reference",
+    "Vulnerability": "cve",
+    "Revision": "number",
+    "Acknowledgment": "organization",
+}
+
+
+def _branch_sort_key(branch: Any) -> tuple[str, str]:
+    """Sort key for Branch: sort by category first, then by product_id (leaf) or name."""
+    category_val = branch.category.value if branch.category else ""
+    if branch.product and branch.product.product_id:
+        name_val = branch.product.product_id.lower()
+    else:
+        name_val = branch.name.lower() if branch.name else ""
+    return (category_val, name_val)
+
+
+# Custom sort key functions for types that need multi-field or conditional sorting.
+# Maps class name to a callable that returns a sort key.
+_CUSTOM_SORT_KEYS: dict[str, Any] = {
+    "Branch": _branch_sort_key,
+}
+
+
+def _get_sort_key(item: Any) -> Any:
+    """Extract a sort key from an item for list sorting."""
+    # Plain strings - case-insensitive
+    if isinstance(item, str):
+        return item.lower()
+
+    if item is None:
+        return ""
+
+    # Check for custom sort key function first
+    class_name = type(item).__name__
+    custom_fn = _CUSTOM_SORT_KEYS.get(class_name)
+    if custom_fn is not None:
+        return custom_fn(item)
+
+    # Look up sort key by class name
+    sort_config = _LIST_SORT_KEYS.get(class_name)
+
+    if sort_config is None:
+        return ""
+
+    # Handle tuple (primary, fallback) config
+    if isinstance(sort_config, tuple):
+        primary_key, fallback_key = sort_config
+        value = getattr(item, primary_key, None)
+        if value is None:
+            value = getattr(item, fallback_key, None)
+    else:
+        value = getattr(item, sort_config, None)
+
+    if value is None:
+        return ""
+
+    # Enum -> extract value
+    if isinstance(value, Enum):
+        return value.value
+
+    # List -> first element
+    if isinstance(value, list):
+        return value[0].lower() if value and isinstance(value[0], str) else ""
+
+    # String -> lowercase
+    if isinstance(value, str):
+        return value.lower()
+
+    return str(value)
+
 
 def serialize_value(inst: type, field: attrs.Attribute, value: Any) -> Any:
     """Custom value serializer for attrs.asdict().
@@ -53,9 +134,18 @@ def serialize_value(inst: type, field: attrs.Attribute, value: Any) -> Any:
             return {k: v for k, v in result.items() if k in _CVSS_REQUIRED_FIELDS}
         return result
 
-    # Handle lists - recursively process items
+    # Handle lists - sort and recursively process items
     if isinstance(value, list):
-        return [item.to_dict() if hasattr(item, "to_dict") else item for item in value]
+        if not value:
+            return []
+
+        # Plain string list - lexicographic case-insensitive sort
+        if all(isinstance(x, str) for x in value):
+            return sorted(value, key=lambda x: x.lower() if x else "")
+
+        # Object list - sort by configured key, then serialize
+        sorted_items = sorted(value, key=_get_sort_key)
+        return [item.to_dict() if hasattr(item, "to_dict") else item for item in sorted_items]
 
     # Handle nested attrs objects
     if attrs.has(type(value)):
