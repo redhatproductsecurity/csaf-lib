@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0b12] - 2026-02-18
+
+### Added
+- Deterministic sorting for CSAF document serialization to ensure consistent JSON output
+  - Branches sorted by category (alphabetically), then by product_id (for leaf nodes) or name
+  - Lists sorted by type-specific keys (e.g., Notes by title, References by URL, Vulnerabilities by CVE)
+  - Dictionary keys sorted alphabetically
+
 ## [0.1.0b11] - 2026-02-09
 
 ### Added
